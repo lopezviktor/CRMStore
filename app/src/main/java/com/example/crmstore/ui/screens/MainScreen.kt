@@ -16,7 +16,6 @@ fun MainScreen() {
     Scaffold(
         bottomBar = { MenuNavegador(navController) }
     ) { innerPadding ->
-
         NavigationApp(navHostController = navController, modifier = Modifier.padding(innerPadding))
     }
 }
