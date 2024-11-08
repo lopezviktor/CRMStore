@@ -11,4 +11,8 @@ fun PantallaAddCliente(navHostController: NavHostController){
         text = "AÑADIR NUEVO CLIENTE"
     )
 
+    Text(
+        text = "AÑADIR NUEVO CLIENTE"
+    )
+
 }
