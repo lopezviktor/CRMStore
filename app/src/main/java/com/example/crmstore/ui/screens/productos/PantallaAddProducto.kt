@@ -6,6 +6,5 @@ import androidx.navigation.NavHostController
 @Composable
 fun PantallaAddProducto(navHostController: NavHostController){
 
-    //PRUEBA PRUEBA
 
 }
