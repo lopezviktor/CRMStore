@@ -1,4 +1,4 @@
-package com.example.crmstore.modelo
+package com.example.crmstore.componentes
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
