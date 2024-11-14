@@ -21,6 +21,10 @@ class VentaRepository {
         return ventas.filter { it.clienteId == clienteId }
     }
 
+    fun calcularTotalVentasPorCliente(clienteId: Int): Double {
+        return obtenerVentasPorCliente(clienteId).sumOf { it.total }
+    }
+
     fun obtenerVentasPorFecha(fecha: String): List<Venta> {
         return ventas.filter { it.fecha == fecha }
     }
@@ -28,6 +32,10 @@ class VentaRepository {
     fun calcularTotalVentas(fechaInicio: String, fechaFin: String): Double {
         return ventas.filter { it.fecha in fechaInicio..fechaFin }
             .sumOf { it.total }
+    }
+
+    fun obtenerVentasPorRangoDeFechas(fechaInicio: String, fechaFin: String): List<Venta> {
+        return ventas.filter { it.fecha in fechaInicio..fechaFin }
     }
 
     fun obtenerProductosMasVendidos(): Map<Int, Int> {
