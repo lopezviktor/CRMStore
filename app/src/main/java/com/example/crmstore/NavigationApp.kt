@@ -20,6 +20,7 @@ import com.example.crmstore.ui.screens.productos.PantallaFormularioProductos
 
 import com.example.crmstore.ui.screens.productos.PantallaProducto
 import com.example.crmstore.ui.screens.ventas.PantallaDashboardVentas
+import com.example.crmstore.ui.screens.ventas.PantallaVentas
 
 @Composable
 fun NavigationApp(navHostController: NavHostController, modifier: Modifier = Modifier) {
@@ -28,21 +29,27 @@ fun NavigationApp(navHostController: NavHostController, modifier: Modifier = Mod
         composable("PantallaCliente") { PantallaCliente(navHostController) }
         composable("PantallaAddCliente") { PantallaAddCliente(navHostController) }
         composable("PantallaFormularioClientes") { PantallaFormularioClientes (navHostController) }
+
         //EMPLEADO
         composable("PantallaEmpleado") { PantallaEmpleado (navHostController) }
         composable("PantallaAddEmpleado") { PantallaAddEmpleado (navHostController) }
         composable("PantallaFormularioEmpleados") { PantallaFormularioEmpleados (navHostController) }
+
         //VENTAS
         composable("PantallaDashboardVentas") { PantallaDashboardVentas (navHostController) }
+        composable("PantallaVentas") { PantallaVentas() }
+
         //LOGIN
         composable("PantallaInicio") { PantallaInicio (navHostController) }
         composable("PantallaLogin") { PantallaLogin (navHostController) }
         composable("PantallaRegistro") { PantallaRegistro (navHostController) }
         composable("PantallaPerfil") { PantallaPerfil (navHostController) }
+
         //PRODUCTOS
         composable("PantallaProducto") { PantallaProducto (navHostController) }
         composable("PantallaAddProducto") { PantallaAddProducto (navHostController) }
         composable("PantallaFormularioProductos") { PantallaFormularioProductos (navHostController) }
+
         //LOGIN REGISTRO
         composable("PantallaLogin") { PantallaLogin (navHostController) }
         composable("PantallaRegistro") { PantallaRegistro (navHostController) }

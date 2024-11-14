@@ -17,6 +17,16 @@ class VentaRepository {
         return ventas.find { it.id == id }
     }
 
+    fun eliminarVenta(id: Int): Boolean {
+        val venta = ventas.find { it.id == id }
+        return if (venta != null) {
+            ventas.remove(venta)
+            true
+        } else {
+            false
+        }
+    }
+
     fun obtenerVentasPorCliente(clienteId: Int): List<Venta> {
         return ventas.filter { it.clienteId == clienteId }
     }
