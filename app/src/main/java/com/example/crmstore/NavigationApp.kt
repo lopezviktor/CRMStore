@@ -24,7 +24,7 @@ import com.example.crmstore.ui.screens.ventas.PantallaVentas
 
 @Composable
 fun NavigationApp(navHostController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(navController = navHostController, startDestination = "pantallaLogin") {
+    NavHost(navController = navHostController, startDestination = "pantallaInicio") {
         // CLIENTES
         composable("PantallaCliente") { PantallaCliente(navHostController) }
         composable("PantallaAddCliente") { PantallaAddCliente(navHostController) }

@@ -11,6 +11,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.crmstore.modelo.Venta
 import com.example.crmstore.ui.viewmodel.VentaViewModel
+import com.google.firebase.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+fun Timestamp.toFormattedString(): String {
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    return sdf.format(this.toDate())
+}
 
 @Composable
 fun PantallaVentas(ventaViewModel: VentaViewModel = viewModel()) {
@@ -34,7 +42,10 @@ fun PantallaVentas(ventaViewModel: VentaViewModel = viewModel()) {
         // Lista de ventas
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
             items(ventas) { venta ->
-                VentaItem(venta, onEliminarClick = { ventaViewModel.eliminarVenta(venta.id) })
+                VentaItem(
+                    venta = venta,
+                    onEliminarClick = { ventaViewModel.eliminarVenta(venta.id) }
+                )
             }
         }
 
@@ -43,14 +54,13 @@ fun PantallaVentas(ventaViewModel: VentaViewModel = viewModel()) {
         // Botón para agregar una venta de ejemplo
         Button(
             onClick = {
-                // Crear una venta de ejemplo y agregarla
                 val nuevaVenta = Venta(
-                    id = ventas.size + 1, // Generar un ID único
-                    clienteId = 1,        // Asigna un cliente de ejemplo
-                    empleadoId = 1,       // Asigna un empleado de ejemplo
-                    fecha = "2024-11-15", // Fecha de ejemplo
-                    productosVendidos = listOf(), // Productos vacíos para simplificar
-                    total = 100.0         // Total de ejemplo
+                    id = ventas.size + 1,        // ID de la venta
+                    clienteId = 1.toString(),    // Convertir el entero a String
+                    empleadoId = 1,              // ID del empleado
+                    fecha = Timestamp.now(),     // Fecha actual
+                    productosVendidos = listOf(), // Lista vacía de productos (ejemplo)
+                    total = 100.0                // Total de la venta
                 )
                 ventaViewModel.agregarVenta(nuevaVenta)
             },
@@ -62,15 +72,22 @@ fun PantallaVentas(ventaViewModel: VentaViewModel = viewModel()) {
 }
 
 @Composable
-fun VentaItem(venta: Venta, onEliminarClick: () -> Unit) {
-    Row(
+fun VentaItem(
+    venta: Venta,
+    onEliminarClick: () -> Unit
+) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(8.dp)
     ) {
-        Text(text = "Venta ID: ${venta.id}, Total: ${venta.total}", modifier = Modifier.weight(1f))
-        Button(onClick = onEliminarClick) {
+        Text(text = "Venta ID: ${venta.id}", style = MaterialTheme.typography.bodyLarge)
+        Text(text = "Fecha: ${venta.fecha.toFormattedString()}", style = MaterialTheme.typography.bodySmall)
+        Text(text = "Total: ${venta.total}", style = MaterialTheme.typography.bodyMedium)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(onClick = onEliminarClick, modifier = Modifier.align(Alignment.End)) {
             Text("Eliminar")
         }
     }

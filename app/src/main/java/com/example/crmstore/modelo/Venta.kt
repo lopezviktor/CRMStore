@@ -1,10 +1,12 @@
 package com.example.crmstore.modelo
 
-data class Venta (
-    val id: Int,
-    val clienteId: Int,
-    val empleadoId: Int,
-    val fecha: String,
-    val productosVendidos: List<DetalleVenta>,
-    val total: Double
+import com.google.firebase.Timestamp
+
+data class Venta(
+    var id: Int = 0,
+    var clienteId: String = "",
+    var empleadoId: Int = 0,
+    var fecha: Timestamp = Timestamp.now(),
+    var productosVendidos: List<DetalleVenta> = emptyList(),
+    var total: Double = 0.0
 )
