@@ -26,7 +26,7 @@ import com.example.crmstore.ui.viewmodel.ClienteViewModel
 
 @Composable
 fun NavigationApp(navHostController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(navController = navHostController, startDestination = "PantallaFormularioClientes") {
+    NavHost(navController = navHostController, startDestination = "PantallaFormularioEmpleados") {
         // CLIENTES
         composable("PantallaCliente") { PantallaCliente(navHostController) }
         composable("PantallaAddCliente") { PantallaAddCliente(navHostController) }
