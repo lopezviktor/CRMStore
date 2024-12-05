@@ -1,10 +1,12 @@
-package com.example.crmstore.ui.screens.empleados
-
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -122,15 +124,7 @@ fun PantallaAddEmpleado(
 
             Button(
                 onClick = {
-                    val (esValido, mensaje) =
-                        validarCampos(
-                            nombre,
-                            apellidos,
-                            mail,
-                            telefono,
-                            puesto,
-                            salarioBase
-                        )
+                    val (esValido, mensaje) = validarCampos(nombre, apellidos, mail, telefono, puesto, salarioBase)
                     if (esValido) {
                         val nuevoEmpleado = Empleado(
                             nombre = nombre,
@@ -168,39 +162,59 @@ fun ComplementoDialog(
 ) {
     var tipoComplemento by remember { mutableStateOf(TipoComplemento.ANTIGUEDAD) }
     var valorComplemento by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Añadir Complemento") },
         text = {
             Column {
-
-                DropdownMenu(
-                    expanded = true,
-                    onDismissRequest = {},
-                    content = {
+                Box {
+                    OutlinedTextField(
+                        value = tipoComplemento.name,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Tipo de Complemento") },
+                        trailingIcon = {
+                            Icon(
+                                if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                                "Expandir"
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expanded = !expanded }
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         TipoComplemento.values().forEach { tipo ->
                             DropdownMenuItem(
                                 text = { Text(tipo.name) },
                                 onClick = {
                                     tipoComplemento = tipo
-
+                                    expanded = false
                                 }
                             )
                         }
                     }
-                )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = valorComplemento,
                     onValueChange = { valorComplemento = it },
                     label = { Text("Valor") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         },
         confirmButton = {
-            Button(onClick = {
+            TextButton(onClick = {
                 val valor = valorComplemento.toDoubleOrNull()
                 if (valor != null) {
                     onComplementoAdded(Complemento(tipoComplemento, valor))
@@ -211,7 +225,7 @@ fun ComplementoDialog(
             }
         },
         dismissButton = {
-            Button(onClick = onDismiss) {
+            TextButton(onClick = onDismiss) {
                 Text("Cancelar")
             }
         }
@@ -232,9 +246,7 @@ fun validarCampos(
     }
 
     // Validar formato de mail
-    val emailRegex =
-        "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})".toRegex()
-
+    val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})".toRegex()
     if (!mail.matches(emailRegex)) {
         return Pair(false, "El formato del mail no es válido.")
     }
