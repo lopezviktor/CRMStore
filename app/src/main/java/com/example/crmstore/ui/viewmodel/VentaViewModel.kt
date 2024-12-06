@@ -8,11 +8,15 @@ import com.example.crmstore.controlador.VentaRepository
 import com.example.crmstore.modelo.DetalleVenta
 import com.example.crmstore.modelo.Producto
 import com.example.crmstore.modelo.Venta
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 class VentaViewModel : ViewModel() {
 
     private val ventaRepository = VentaRepository()
+
+    val clientes = mutableStateListOf<String>() // Lista de clientes desde Firebase
+    val empleados = mutableStateListOf<String>() // Lista de empleados desde Firebase
 
     // Lista observable de ventas para la UI
     val ventas = mutableStateListOf<Pair<String, Venta>>() // El ID del documento y el objeto Venta
@@ -34,8 +38,44 @@ class VentaViewModel : ViewModel() {
     val productos = mutableStateListOf<Producto>()
 
     init {
+        cargarClientes()
+        cargarEmpleados()
         cargarVentasEnTiempoReal()
         cargarProductos()
+    }
+
+    fun cargarClientes() {
+        val db = FirebaseFirestore.getInstance() // Instancia de Firestore
+        val clientesCollection = db.collection("clientes") // Nombre de la colección
+
+        clientesCollection.get().addOnSuccessListener { snapshot ->
+            clientes.clear() // Limpiamos la lista antes de agregar nuevos datos
+            for (document in snapshot.documents) {
+                val nombre = document.getString("nombre") ?: "Nombre desconocido"
+                val apellidos = document.getString("apellidos") ?: "Apellidos desconocidos"
+                clientes.add("$nombre $apellidos") // Añadimos "Nombre Apellidos" a la lista
+            }
+        }.addOnFailureListener { e ->
+            // Manejar errores de Firebase
+            println("Error al cargar clientes: ${e.message}")
+        }
+    }
+
+    fun cargarEmpleados() {
+        val db = FirebaseFirestore.getInstance() // Instancia de Firestore
+        val empleadosCollection = db.collection("empleados") // Nombre de la colección
+
+        empleadosCollection.get().addOnSuccessListener { snapshot ->
+            empleados.clear() // Limpiamos la lista antes de agregar nuevos datos
+            for (document in snapshot.documents) {
+                val nombre = document.getString("nombre") ?: "Nombre desconocido"
+                val apellidos = document.getString("apellidos") ?: "Apellidos desconocidos"
+                empleados.add("$nombre $apellidos") // Añadimos "Nombre Apellidos" a la lista
+            }
+        }.addOnFailureListener { e ->
+            // Manejar errores de Firebase
+            println("Error al cargar empleados: ${e.message}")
+        }
     }
 
     // Función para cargar ventas en tiempo real desde Firebase
@@ -47,7 +87,7 @@ class VentaViewModel : ViewModel() {
     }
 
     // Función para cargar productos desde Firebase y mapear sus IDs
-    private fun cargarProductos() {
+    fun cargarProductos() {
         ventaRepository.cargarProductos { productosObtenidos, map ->
             productos.clear()
             productos.addAll(productosObtenidos)

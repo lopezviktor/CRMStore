@@ -1,6 +1,7 @@
 package com.example.crmstore.ui.screens.ventas
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,12 +12,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.crmstore.modelo.Producto
 import com.example.crmstore.ui.viewmodel.VentaViewModel
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
@@ -29,12 +36,13 @@ fun Timestamp.toFormattedString(): String {
 
 @Composable
 fun PantallaVentas(ventaViewModel: VentaViewModel) {
+
+    val clientes = ventaViewModel.clientes
+    val empleados = ventaViewModel.empleados
+    val clienteSeleccionado by ventaViewModel.clienteSeleccionado // Cliente seleccionado
+    val empleadoSeleccionado by ventaViewModel.empleadoSeleccionado // Empleado seleccionado
     val carrito = ventaViewModel.carrito
-    val productos = listOf(
-        Producto(nombre = "Camisa", precio = 20.0),
-        Producto(nombre = "Pantalón", precio = 30.0),
-        Producto(nombre = "Zapatos", precio = 50.0)
-    )
+    val productos = ventaViewModel.productos // Observar productos desde Firebase
     val ventas = ventaViewModel.ventas // Lista de ventas con IDs
 
     Column(
@@ -42,6 +50,26 @@ fun PantallaVentas(ventaViewModel: VentaViewModel) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // Seleccionar Cliente
+        SeleccionDropdown(
+            label = "Selecciona Cliente",
+            opciones = clientes,
+            seleccionado = clienteSeleccionado,
+            onSeleccionar = { ventaViewModel.clienteSeleccionado.value = it }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Seleccionar Empleado
+        SeleccionDropdown(
+            label = "Selecciona Empleado",
+            opciones = empleados,
+            seleccionado = empleadoSeleccionado,
+            onSeleccionar = { ventaViewModel.empleadoSeleccionado.value = it }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(text = "Carrito de Compras", style = MaterialTheme.typography.titleMedium)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -50,16 +78,30 @@ fun PantallaVentas(ventaViewModel: VentaViewModel) {
         Text(text = "Productos disponibles", style = MaterialTheme.typography.titleSmall)
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(productos) { producto ->
+                var cantidad by remember { mutableStateOf(1) }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = producto.nombre)
-                    Text(text = "${producto.precio} €")
+                    Column {
+                        Text(text = producto.nombre)
+                        Text(text = "${producto.precio} €")
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Button(onClick = { if (cantidad > 1) cantidad-- }) {
+                            Text("-")
+                        }
+                        Text(text = "$cantidad", modifier = Modifier.padding(horizontal = 8.dp))
+                        Button(onClick = { cantidad++ }) {
+                            Text("+")
+                        }
+                    }
+
                     Button(onClick = {
-                        ventaViewModel.agregarProductoAlCarrito(producto, 1)
+                        ventaViewModel.agregarProductoAlCarrito(producto, cantidad)
                     }) {
                         Text("Añadir")
                     }
@@ -125,6 +167,41 @@ fun PantallaVentas(ventaViewModel: VentaViewModel) {
                     Text(text = "Empleado: ${venta.empleado}")
                     Text(text = "Total: ${venta.total} €")
                     Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+}
+@Composable
+fun SeleccionDropdown(
+    label: String,
+    opciones: List<String>,
+    seleccionado: String?,
+    onSeleccionar: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column {
+        Text(text = label, style = MaterialTheme.typography.bodyLarge)
+        Box {
+            Button(
+                onClick = { expanded = true },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = seleccionado ?: "Selecciona una opción")
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                opciones.forEach { opcion ->
+                    DropdownMenuItem(
+                        text = { Text(text = opcion) }, // Contenido del elemento
+                        onClick = {
+                            onSeleccionar(opcion) // Selecciona la opción
+                            expanded = false // Cierra el menú
+                        }
+                    )
                 }
             }
         }
