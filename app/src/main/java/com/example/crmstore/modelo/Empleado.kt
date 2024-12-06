@@ -8,23 +8,24 @@ data class Empleado(
     val puesto: String? = null,
     val salarioBase: Double = 0.0,
     val complementos: List<Complemento> = emptyList(),
-// Si contamos con 14 pagas de 12 mensualidades + 2 extras
-val pagas: Int = 14,
-val tipoContrato: TipoContrato = TipoContrato.INDEFINIDO
+    val pagas: Int = 14,
+    val tipoContrato: TipoContrato = TipoContrato.INDEFINIDO
 )
+
 enum class TipoContrato {
     INDEFINIDO,
     TEMPORAL,
     PRACTICAS,
     PARCIAL
 }
+
 data class Complemento(
     val tipo: TipoComplemento = TipoComplemento.ANTIGUEDAD,
     val valor: Double = 0.0
 ) {
     constructor() : this(TipoComplemento.ANTIGUEDAD, 0.0)
 }
-enum class TipoComplemento{
+enum class TipoComplemento {
     ANTIGUEDAD,
     PRODUCTIVIDAD,
     NOCTURNIDAD,

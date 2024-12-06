@@ -34,7 +34,6 @@ class EmpleadoViewModel : ViewModel() {
             } catch (e: Exception) {
                 // Manejo de errores
                 println("Error al eliminar empleado: ${e.message}")
-                // Aquí podrías actualizar un estado de error si lo deseas
             }
         }
     }

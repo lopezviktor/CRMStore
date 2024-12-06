@@ -1,5 +1,6 @@
 package com.example.crmstore
 
+import PantallaAddEmpleado
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -14,7 +15,6 @@ import com.example.crmstore.ui.screens.clientes.PantallaAddCliente
 import com.example.crmstore.ui.screens.clientes.PantallaCliente
 import com.example.crmstore.ui.screens.clientes.PantallaFormularioClientes
 import com.example.crmstore.ui.screens.empleados.PantallaEmpleado
-import com.example.crmstore.ui.screens.empleados.PantallaAddEmpleado
 import com.example.crmstore.ui.screens.empleados.PantallaFormularioEmpleados
 import com.example.crmstore.ui.screens.productos.PantallaAddProducto
 import com.example.crmstore.ui.screens.productos.PantallaFormularioProductos
