@@ -1,7 +1,8 @@
 package com.example.crmstore.modelo
 
 data class DetalleVenta(
-    var productoId: Long = 0L,
+    val productoId: String = "",
+    val nombre: String = "",
     var cantidad: Int = 0,
-    var precioUnitario: Double = 0.0
+    val precioUnitario: Double = 0.0
 )
