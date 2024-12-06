@@ -6,26 +6,39 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.crmstore.controlador.VentaRepository
 import com.example.crmstore.modelo.DetalleVenta
+import com.example.crmstore.modelo.Producto
 import com.example.crmstore.modelo.Venta
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class VentaViewModel : ViewModel() {
+
     private val ventaRepository = VentaRepository()
 
-    // Lista de ventas observables para la UI
-    val ventas = mutableStateListOf<Venta>()
+    // Lista observable de ventas para la UI
+    val ventas = mutableStateListOf<Pair<String, Venta>>() // El ID del documento y el objeto Venta
 
     // Mensaje para notificaciones en la UI
     val mensaje = mutableStateOf("")
 
+    // Carrito de productos seleccionados
+    val carrito = mutableStateListOf<DetalleVenta>()
+
+    // Cliente y empleado seleccionados
+    val clienteSeleccionado = mutableStateOf<String?>(null)
+    val empleadoSeleccionado = mutableStateOf<String?>(null)
+
+    // Mapa para asociar productos con sus IDs de Firebase
+    private val productosMap = mutableMapOf<String, Producto>()
+
+    // Lista de productos observables para la UI
+    val productos = mutableStateListOf<Producto>()
+
     init {
         cargarVentasEnTiempoReal()
+        cargarProductos()
     }
 
-    // Función para cargar ventas en tiempo real
+    // Función para cargar ventas en tiempo real desde Firebase
     private fun cargarVentasEnTiempoReal() {
         ventaRepository.obtenerVentasEnTiempoReal { ventasObtenidas ->
             ventas.clear()
@@ -33,80 +46,82 @@ class VentaViewModel : ViewModel() {
         }
     }
 
-    // Función para agregar una nueva venta
-    fun agregarVenta(venta: Venta) {
-        viewModelScope.launch {
-            val resultado = ventaRepository.agregarVenta(venta)
-            if (resultado) {
-                mensaje.value = "Venta añadida correctamente"
-            } else {
-                mensaje.value = "Error al añadir la venta"
-            }
+    // Función para cargar productos desde Firebase y mapear sus IDs
+    private fun cargarProductos() {
+        ventaRepository.cargarProductos { productosObtenidos, map ->
+            productos.clear()
+            productos.addAll(productosObtenidos)
+            productosMap.clear()
+            productosMap.putAll(map)
         }
     }
 
-    fun eliminarVenta(id: Int) {
+    // Función para agregar un producto al carrito
+    fun agregarProductoAlCarrito(producto: Producto, cantidad: Int) {
+        val productoId = producto.nombre // O usa un identificador único si lo tienes
+        val productoEnCarrito = carrito.find { it.productoId == productoId }
+
+        if (productoEnCarrito != null) {
+            // Si ya está en el carrito, actualiza la cantidad
+            productoEnCarrito.cantidad += cantidad
+        } else {
+            // Si no está en el carrito, agrégalo
+            carrito.add(
+                DetalleVenta(
+                    productoId = productoId,
+                    nombre = producto.nombre,
+                    cantidad = cantidad,
+                    precioUnitario = producto.precio
+                )
+            )
+        }
+    }
+
+    // Función para eliminar un producto del carrito
+    fun eliminarProductoDelCarrito(productoId: String) {
+        carrito.removeAll { it.productoId == productoId }
+    }
+
+    // Función para calcular el total del carrito
+    fun calcularTotalCarrito(): Double {
+        return carrito.sumOf { it.cantidad * it.precioUnitario }
+    }
+
+    // Función para agregar una nueva venta
+    fun agregarVenta() {
+        val nuevaVenta = Venta(
+            cliente = clienteSeleccionado.value ?: "",
+            empleado = empleadoSeleccionado.value ?: "",
+            productosVendidos = carrito.toList(),
+            total = calcularTotalCarrito()
+        )
+
         viewModelScope.launch {
-            val resultado = ventaRepository.eliminarVenta(id.toString())
+            val resultado = ventaRepository.agregarVenta(nuevaVenta)
+            mensaje.value = if (resultado) "Venta añadida correctamente" else "Error al añadir la venta"
+            if (resultado) limpiarFormulario()
+        }
+    }
+
+    // Función para eliminar una venta por el ID del documento generado por Firestore
+    fun eliminarVenta(documentId: String) {
+        viewModelScope.launch {
+            val resultado = ventaRepository.eliminarVenta(documentId)
             if (resultado) {
-                val ventasFiltradas = ventas.filter { it.id != id }
+                val ventasFiltradas = ventas.filter { it.first != documentId }
                 ventas.clear()
                 ventas.addAll(ventasFiltradas)
                 mensaje.value = "Venta eliminada exitosamente"
             } else {
-                mensaje.value = "Error al eliminar venta en Firebase"
+                mensaje.value = "Error al eliminar la venta en Firebase"
             }
         }
     }
 
-    // Extensión para convertir String a Date
-    fun String.toDate(): Date? {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return try {
-            sdf.parse(this)
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    // Función para filtrar ventas por rango de fechas
-    fun filtrarVentasPorRango(ventas: List<Venta>, fechaInicio: String, fechaFin: String): List<Venta> {
-        val inicio = fechaInicio.toDate()
-        val fin = fechaFin.toDate()
-
-        return if (inicio != null && fin != null) {
-            ventas.filter { venta ->
-                val fechaVenta = venta.fecha.toDate() // Convierte el Timestamp a Date
-                fechaVenta in inicio..fin
-            }
-        } else {
-            emptyList() // Devuelve una lista vacía si las fechas no son válidas
-        }
-    }
-
-    // Función para obtener productos más vendidos
-    fun obtenerProductosMasVendidos(): Map<Long, Int> {
-        val conteoProductos = mutableMapOf<Long, Int>()
-        ventas.forEach { venta ->
-            venta.productosVendidos.forEach { detalle ->
-                conteoProductos[detalle.productoId] =
-                    (conteoProductos[detalle.productoId] ?: 0) + detalle.cantidad
-            }
-        }
-        return conteoProductos.toList().sortedByDescending { (_, cantidad) -> cantidad }.toMap()
-    }
-
-    // Obtener el nombre del cliente por su ID
-    suspend fun obtenerNombreCliente(clienteId: Int): String {
-        val cliente = ventaRepository.obtenerCliente(clienteId.toString())
-        return cliente?.nombre ?: "Cliente no encontrado"
-    }
-
-    suspend fun obtenerDetalleProductos(detalles: List<DetalleVenta>): String {
-        val productos = detalles.map { detalle ->
-            val producto = ventaRepository.obtenerProducto(detalle.productoId.toString())
-            "${producto?.nombre ?: "Desconocido"} (x${detalle.cantidad})"
-        }
-        return productos.joinToString(", ")
+    // Función para limpiar el formulario después de confirmar una venta
+    private fun limpiarFormulario() {
+        carrito.clear()
+        clienteSeleccionado.value = null
+        empleadoSeleccionado.value = null
     }
 }

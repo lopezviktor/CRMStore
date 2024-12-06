@@ -22,8 +22,9 @@ enum class TipoContrato {
 data class Complemento(
     val tipo: TipoComplemento = TipoComplemento.ANTIGUEDAD,
     val valor: Double = 0.0
-)
-
+) {
+    constructor() : this(TipoComplemento.ANTIGUEDAD, 0.0)
+}
 enum class TipoComplemento {
     ANTIGUEDAD,
     PRODUCTIVIDAD,

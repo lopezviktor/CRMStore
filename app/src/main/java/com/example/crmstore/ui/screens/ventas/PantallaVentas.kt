@@ -1,15 +1,22 @@
 package com.example.crmstore.ui.screens.ventas
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.crmstore.modelo.Venta
+import com.example.crmstore.modelo.Producto
 import com.example.crmstore.ui.viewmodel.VentaViewModel
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
@@ -21,74 +28,105 @@ fun Timestamp.toFormattedString(): String {
 }
 
 @Composable
-fun PantallaVentas(ventaViewModel: VentaViewModel = viewModel()) {
-    val ventas = ventaViewModel.ventas
-    val mensaje by remember { ventaViewModel.mensaje }
+fun PantallaVentas(ventaViewModel: VentaViewModel) {
+    val carrito = ventaViewModel.carrito
+    val productos = listOf(
+        Producto(nombre = "Camisa", precio = 20.0),
+        Producto(nombre = "Pantalón", precio = 30.0),
+        Producto(nombre = "Zapatos", precio = 50.0)
+    )
+    val ventas = ventaViewModel.ventas // Lista de ventas con IDs
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = "Lista de Ventas", style = MaterialTheme.typography.headlineMedium)
+        Text(text = "Carrito de Compras", style = MaterialTheme.typography.titleMedium)
 
-        // Mostrar mensaje si existe
-        if (mensaje.isNotEmpty()) {
-            Text(text = mensaje, color = MaterialTheme.colorScheme.primary)
-        }
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Lista de ventas
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(ventas) { venta ->
-                VentaItem(
-                    venta = venta,
-                    onEliminarClick = { ventaViewModel.eliminarVenta(venta.id) }
-                )
+        // Lista de productos disponibles
+        Text(text = "Productos disponibles", style = MaterialTheme.typography.titleSmall)
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(productos) { producto ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = producto.nombre)
+                    Text(text = "${producto.precio} €")
+                    Button(onClick = {
+                        ventaViewModel.agregarProductoAlCarrito(producto, 1)
+                    }) {
+                        Text("Añadir")
+                    }
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para agregar una venta de ejemplo
+        // Mostrar productos en el carrito
+        Text(text = "Productos en el Carrito", style = MaterialTheme.typography.titleSmall)
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(carrito) { detalle ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "${detalle.nombre} x${detalle.cantidad}")
+                    Text(text = "${detalle.precioUnitario * detalle.cantidad} €")
+                    Button(onClick = {
+                        ventaViewModel.eliminarProductoDelCarrito(detalle.productoId)
+                    }) {
+                        Text("Eliminar")
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Mostrar total del carrito
+        val total = ventaViewModel.calcularTotalCarrito()
+        Text(text = "Total: $total €", style = MaterialTheme.typography.titleMedium)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón para confirmar venta
         Button(
             onClick = {
-                val nuevaVenta = Venta(
-                    id = ventas.size + 1,        // ID de la venta
-                    clienteId = 1.toString(),    // Convertir el entero a String
-                    empleadoId = 1,              // ID del empleado
-                    fecha = Timestamp.now(),     // Fecha actual
-                    productosVendidos = listOf(), // Lista vacía de productos (ejemplo)
-                    total = 100.0                // Total de la venta
-                )
-                ventaViewModel.agregarVenta(nuevaVenta)
+                ventaViewModel.agregarVenta()
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = carrito.isNotEmpty()
         ) {
-            Text(text = "Agregar Venta de Prueba")
+            Text("Confirmar Venta")
         }
-    }
-}
 
-@Composable
-fun VentaItem(
-    venta: Venta,
-    onEliminarClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        Text(text = "Venta ID: ${venta.id}", style = MaterialTheme.typography.bodyLarge)
-        Text(text = "Fecha: ${venta.fecha.toFormattedString()}", style = MaterialTheme.typography.bodySmall)
-        Text(text = "Total: ${venta.total}", style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(onClick = onEliminarClick, modifier = Modifier.align(Alignment.End)) {
-            Text("Eliminar")
+        // Mostrar ventas existentes
+        Text(text = "Ventas existentes", style = MaterialTheme.typography.titleSmall)
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(ventas) { (id, venta) ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text(text = "ID: $id")
+                    Text(text = "Cliente: ${venta.cliente}")
+                    Text(text = "Empleado: ${venta.empleado}")
+                    Text(text = "Total: ${venta.total} €")
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
         }
     }
 }
