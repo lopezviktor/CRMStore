@@ -21,29 +21,43 @@ class AuthManager(
 
     init {
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(clientId)
-            .requestEmail()
+            .requestIdToken(clientId) // Asegúrate de que el clientId es el correcto de Firebase
+            .requestEmail() // Permite acceder al correo electrónico del usuario
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(activity, googleSignInOptions)
     }
 
+    /**
+     * Lanza el flujo de inicio de sesión de Google.
+     */
     fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
         googleSignInLauncher.launch(signInIntent)
+        Log.d("AuthManager", "Iniciando flujo de Google Sign-In.")
     }
 
-    fun handleGoogleSignInResult(data: Intent?, onSuccess: (String) -> Unit, onFailure: (Exception?) -> Unit) {
-        Log.d("AuthManager", "Manejando el resultado de Google Sign-In.")
+    /**
+     * Maneja el resultado del flujo de Google Sign-In.
+     */
+    fun handleGoogleSignInResult(
+        data: Intent?,
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception?) -> Unit
+    ) {
+        Log.d("AuthManager", "Procesando resultado de Google Sign-In.")
         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
         try {
             val account = task.getResult(ApiException::class.java)
             Log.d("AuthManager", "ID Token obtenido: ${account.idToken}")
+
+            // Autentica con Firebase usando el token de Google
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
             auth.signInWithCredential(credential)
                 .addOnCompleteListener(activity) { authTask ->
                     if (authTask.isSuccessful) {
-                        Log.d("AuthManager", "Autenticación en Firebase exitosa.")
+                        val user = auth.currentUser
+                        Log.d("AuthManager", "Usuario autenticado: ${user?.email}")
                         onSuccess("Autenticación con Google exitosa.")
                     } else {
                         Log.e("AuthManager", "Error en la autenticación con Firebase.", authTask.exception)
@@ -56,12 +70,27 @@ class AuthManager(
         }
     }
 
+    /**
+     * Verifica si el usuario actual está autenticado.
+     */
     fun isUserLoggedIn(): Boolean {
-        return auth.currentUser != null
+        val isLoggedIn = auth.currentUser != null
+        Log.d("AuthManager", "Estado de inicio de sesión: ${if (isLoggedIn) "Autenticado" else "No autenticado"}")
+        return isLoggedIn
     }
 
-    fun signOut() {
-        auth.signOut()
-        googleSignInClient.signOut()
+    /**
+     * Cierra sesión del usuario actual.
+     */
+    fun logout(
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        try {
+            FirebaseAuth.getInstance().signOut()
+            onSuccess()
+        } catch (e: Exception) {
+            onFailure(e)
+        }
     }
 }

@@ -1,7 +1,9 @@
 package com.example.crmstore.componentes
 
+import android.util.Log
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Person
@@ -16,10 +18,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.crmstore.AuthManager
 
 
 @Composable
-fun MenuNavegador(navController: NavHostController) {
+fun MenuNavegador(navController: NavHostController, authManager: AuthManager) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
@@ -83,6 +86,26 @@ fun MenuNavegador(navController: NavHostController) {
                         launchSingleTop = true
                         restoreState = true
                     }
+                }
+            )
+
+            // CIERRE DE SESIÓN
+            NavigationBarItem(
+                icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Cerrar Sesión") },
+                label = { Text("Cerrar Sesión") },
+                selected = false, // No necesita estar seleccionado
+                onClick = {
+                    authManager.logout( // Usa la función centralizada en AuthManager
+                        onSuccess = {
+                            navController.navigate("PantallaLogin") {
+                                popUpTo(0) { inclusive = true } // Limpia el stack de navegación
+                            }
+                        },
+                        onFailure = { exception ->
+                            Log.e("MenuNavegador", "Error al cerrar sesión", exception)
+                            // Puedes mostrar un mensaje de error al usuario si lo deseas
+                        }
+                    )
                 }
             )
         }

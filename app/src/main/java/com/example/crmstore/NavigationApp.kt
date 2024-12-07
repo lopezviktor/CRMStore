@@ -22,12 +22,10 @@ import com.example.crmstore.ui.screens.productos.PantallaProducto
 import com.example.crmstore.ui.screens.ventas.PantallaAddVentas
 import com.example.crmstore.ui.screens.ventas.PantallaDashboardVentas
 import com.example.crmstore.ui.screens.ventas.PantallaVentas
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavigationApp(navHostController: NavHostController, authManager: AuthManager, modifier: Modifier = Modifier) {
 
-    val auth = FirebaseAuth.getInstance()
     val startDestination = if (authManager.isUserLoggedIn()) "PantallaDashboardVentas" else "PantallaLogin"
 
     NavHost(
@@ -59,7 +57,6 @@ fun NavigationApp(navHostController: NavHostController, authManager: AuthManager
         composable("PantallaRegistro") { PantallaRegistro (navHostController) }
         composable("PantallaPerfil") { PantallaPerfil (navHostController) }
 
-        composable("MainScreen") { MainScreen(authManager) }
-
+        composable("MainScreen") { MainScreen(authManager, navHostController) }
     }
 }

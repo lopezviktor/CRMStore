@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.crmstore.ui.screens.MainScreen
 
 class MainActivity : ComponentActivity() {
@@ -16,13 +17,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Configuración del inicio de sesión con Google
         val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             authManager.handleGoogleSignInResult(
                 result.data,
                 onSuccess = {
-                    Log.d("MainActivity", "Navegando a pantallaInicio después de autenticación exitosa.")
-                    navHostController.navigate("pantallaInicio") {
-                        popUpTo("pantallaLogin") { inclusive = true }
+                    Log.d("MainActivity", "Inicio de sesión exitoso con Google.")
+                    if (::navHostController.isInitialized) {
+                        navHostController.navigate("PantallaDashboardVentas") {
+                            popUpTo("PantallaLogin") { inclusive = true }
+                        }
+                    } else {
+                        Log.e("MainActivity", "navHostController no inicializado")
                     }
                 },
                 onFailure = { exception ->
@@ -31,15 +37,18 @@ class MainActivity : ComponentActivity() {
             )
         }
 
+        // Inicializar AuthManager
         authManager = AuthManager(
             activity = this,
             clientId = getString(R.string.default_web_client_id),
             googleSignInLauncher = googleSignInLauncher
         )
 
+        // Configurar UI
         enableEdgeToEdge()
         setContent {
-            MainScreen(authManager = authManager)
+            navHostController = rememberNavController()
+            MainScreen(authManager = authManager, navController = navHostController)
         }
     }
 
