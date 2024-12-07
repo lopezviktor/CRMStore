@@ -6,12 +6,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.crmstore.AuthManager
 import com.example.crmstore.NavigationApp
 import com.example.crmstore.componentes.MenuNavegador
 
 
 @Composable
-fun MainScreen() {
+fun MainScreen(authManager: AuthManager) {
     val navController = rememberNavController()
     val noMenuScreens = listOf("PantallaLogin", "PantallaRegistro")
 
@@ -20,7 +21,6 @@ fun MainScreen() {
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     Scaffold(
-        // Mostrar el menú solo si la ruta actual no está en la lista de pantallas sin menú
         bottomBar = {
             if (currentRoute !in noMenuScreens) {
                 MenuNavegador(navController)
@@ -29,6 +29,7 @@ fun MainScreen() {
     ) { innerPadding ->
         NavigationApp(
             navHostController = navController,
+            authManager = authManager,
             modifier = Modifier.padding(innerPadding)
         )
     }

@@ -7,7 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.crmstore.ui.screens.PantallaInicio
+import com.example.crmstore.ui.screens.MainScreen
 import com.example.crmstore.ui.screens.PantallaLogin
 import com.example.crmstore.ui.screens.PantallaPerfil
 import com.example.crmstore.ui.screens.PantallaRegistro
@@ -22,10 +22,18 @@ import com.example.crmstore.ui.screens.productos.PantallaProducto
 import com.example.crmstore.ui.screens.ventas.PantallaAddVentas
 import com.example.crmstore.ui.screens.ventas.PantallaDashboardVentas
 import com.example.crmstore.ui.screens.ventas.PantallaVentas
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun NavigationApp(navHostController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(navController = navHostController, startDestination = "PantallaVentas") {
+fun NavigationApp(navHostController: NavHostController, authManager: AuthManager, modifier: Modifier = Modifier) {
+
+    val auth = FirebaseAuth.getInstance()
+    val startDestination = if (authManager.isUserLoggedIn()) "PantallaDashboardVentas" else "PantallaLogin"
+
+    NavHost(
+        navController = navHostController,
+        startDestination = startDestination,
+    ) {
         // CLIENTES
         composable("PantallaCliente") { PantallaCliente(navHostController) }
         composable("PantallaAddCliente") { PantallaAddCliente(navHostController) }
@@ -41,12 +49,6 @@ fun NavigationApp(navHostController: NavHostController, modifier: Modifier = Mod
         composable("PantallaVentas") { PantallaVentas(ventaViewModel = viewModel(), navHostController = navHostController) }
         composable("PantallaAddVentas") { PantallaAddVentas(ventaViewModel = viewModel(), navHostController = navHostController) }
 
-        //LOGIN
-        composable("PantallaInicio") { PantallaInicio (navHostController) }
-        composable("PantallaLogin") { PantallaLogin (navHostController) }
-        composable("PantallaRegistro") { PantallaRegistro (navHostController) }
-        composable("PantallaPerfil") { PantallaPerfil (navHostController) }
-
         //PRODUCTOS
         composable("PantallaProducto") { PantallaProducto (navHostController) }
         composable("PantallaAddProducto") { PantallaAddProducto (navHostController) }
@@ -55,6 +57,9 @@ fun NavigationApp(navHostController: NavHostController, modifier: Modifier = Mod
         //LOGIN REGISTRO
         composable("PantallaLogin") { PantallaLogin (navHostController) }
         composable("PantallaRegistro") { PantallaRegistro (navHostController) }
+        composable("PantallaPerfil") { PantallaPerfil (navHostController) }
+
+        composable("MainScreen") { MainScreen(authManager) }
 
     }
 }
