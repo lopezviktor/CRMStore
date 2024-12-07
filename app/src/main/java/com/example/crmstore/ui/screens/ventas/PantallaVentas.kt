@@ -1,9 +1,7 @@
 package com.example.crmstore.ui.screens.ventas
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,18 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.crmstore.modelo.Venta
 import com.example.crmstore.ui.viewmodel.VentaViewModel
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
@@ -35,175 +29,80 @@ fun Timestamp.toFormattedString(): String {
 }
 
 @Composable
-fun PantallaVentas(ventaViewModel: VentaViewModel) {
-
-    val clientes = ventaViewModel.clientes
-    val empleados = ventaViewModel.empleados
-    val clienteSeleccionado by ventaViewModel.clienteSeleccionado // Cliente seleccionado
-    val empleadoSeleccionado by ventaViewModel.empleadoSeleccionado // Empleado seleccionado
-    val carrito = ventaViewModel.carrito
-    val productos = ventaViewModel.productos // Observar productos desde Firebase
-    val ventas = ventaViewModel.ventas // Lista de ventas con IDs
+fun PantallaVentas(
+    ventaViewModel: VentaViewModel,
+    navHostController: NavHostController
+) {
+    val ventas = ventaViewModel.ventas
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Seleccionar Cliente
-        SeleccionDropdown(
-            label = "Selecciona Cliente",
-            opciones = clientes,
-            seleccionado = clienteSeleccionado,
-            onSeleccionar = { ventaViewModel.clienteSeleccionado.value = it }
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Seleccionar Empleado
-        SeleccionDropdown(
-            label = "Selecciona Empleado",
-            opciones = empleados,
-            seleccionado = empleadoSeleccionado,
-            onSeleccionar = { ventaViewModel.empleadoSeleccionado.value = it }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Carrito de Compras", style = MaterialTheme.typography.titleMedium)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Lista de productos disponibles
-        Text(text = "Productos disponibles", style = MaterialTheme.typography.titleSmall)
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(productos) { producto ->
-                var cantidad by remember { mutableStateOf(1) }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Text(text = producto.nombre)
-                        Text(text = "${producto.precio} €")
-                    }
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Button(onClick = { if (cantidad > 1) cantidad-- }) {
-                            Text("-")
-                        }
-                        Text(text = "$cantidad", modifier = Modifier.padding(horizontal = 8.dp))
-                        Button(onClick = { cantidad++ }) {
-                            Text("+")
-                        }
-                    }
-
-                    Button(onClick = {
-                        ventaViewModel.agregarProductoAlCarrito(producto, cantidad)
-                    }) {
-                        Text("Añadir")
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Mostrar productos en el carrito
-        Text(text = "Productos en el Carrito", style = MaterialTheme.typography.titleSmall)
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(carrito) { detalle ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "${detalle.nombre} x${detalle.cantidad}")
-                    Text(text = "${detalle.precioUnitario * detalle.cantidad} €")
-                    Button(onClick = {
-                        ventaViewModel.eliminarProductoDelCarrito(detalle.productoId)
-                    }) {
-                        Text("Eliminar")
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Mostrar total del carrito
-        val total = ventaViewModel.calcularTotalCarrito()
-        Text(text = "Total: $total €", style = MaterialTheme.typography.titleMedium)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón para confirmar venta
+        // Botón para ir a la pantalla de añadir ventas
         Button(
-            onClick = {
-                ventaViewModel.agregarVenta()
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = carrito.isNotEmpty()
+            onClick = { navHostController.navigate("PantallaAddVentas") },
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Confirmar Venta")
+            Text("Añadir Nueva Venta")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Mostrar ventas existentes
-        Text(text = "Ventas existentes", style = MaterialTheme.typography.titleSmall)
+        // Encabezado
+        Text(text = "Ventas Existentes", style = MaterialTheme.typography.headlineMedium)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Lista de ventas
         LazyColumn(modifier = Modifier.weight(1f)) {
-            items(ventas) { (id, venta) ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Text(text = "ID: $id")
-                    Text(text = "Cliente: ${venta.cliente}")
-                    Text(text = "Empleado: ${venta.empleado}")
-                    Text(text = "Total: ${venta.total} €")
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+            items(ventas) { (id, venta) ->  // Desestructurar el Pair
+                VentaItem(
+                    venta = venta,  // Pasar solo el objeto Venta
+                    onEliminarClick = {
+                        ventaViewModel.eliminarVenta(id)  // Usar el ID para eliminar
+                    }
+                )
             }
         }
     }
 }
-@Composable
-fun SeleccionDropdown(
-    label: String,
-    opciones: List<String>,
-    seleccionado: String?,
-    onSeleccionar: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
 
-    Column {
-        Text(text = label, style = MaterialTheme.typography.bodyLarge)
-        Box {
-            Button(
-                onClick = { expanded = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = seleccionado ?: "Selecciona una opción")
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                opciones.forEach { opcion ->
-                    DropdownMenuItem(
-                        text = { Text(text = opcion) }, // Contenido del elemento
-                        onClick = {
-                            onSeleccionar(opcion) // Selecciona la opción
-                            expanded = false // Cierra el menú
-                        }
-                    )
-                }
-            }
+@Composable
+fun VentaItem(venta: Venta, onEliminarClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .border(1.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.medium)
+            .padding(16.dp)
+    ) {
+        // Información principal de la venta
+        Text(text = "Cliente: ${venta.cliente}", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "Empleado: ${venta.empleado}", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "Total: ${venta.total} €", style = MaterialTheme.typography.bodyMedium)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Detalles de los productos vendidos
+        Text(text = "Productos:", style = MaterialTheme.typography.bodyMedium)
+        venta.productosVendidos.forEach { producto ->
+            Text(
+                text = "- ${producto.nombre}: ${producto.precioUnitario} € (x${producto.cantidad})",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Botón para eliminar la venta
+        Button(
+            onClick = onEliminarClick,
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text("Eliminar Venta")
         }
     }
 }
