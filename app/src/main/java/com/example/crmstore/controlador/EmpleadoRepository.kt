@@ -1,6 +1,7 @@
 package com.example.crmstore.controlador
 
 import com.example.crmstore.modelo.Empleado
+import com.example.crmstore.modelo.Evento
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -8,6 +9,7 @@ class EmpleadoRepository {
 
     private val db = FirebaseFirestore.getInstance()
 
+    // Método para obtener empleados en tiempo real
     fun obtenerEmpleados(onComplete: (List<Pair<String, Empleado>>) -> Unit) {
         db.collection("empleados").addSnapshotListener { snapshot, e ->
             if (e != null) {
@@ -18,81 +20,100 @@ class EmpleadoRepository {
             if (snapshot != null) {
                 val empleados = snapshot.documents.mapNotNull { document ->
                     val empleado = document.toObject(Empleado::class.java)
-                    empleado?.let { document.id to it }
+                    empleado?.let { document.id to it } // Retorna el ID del documento y el objeto empleado
                 }
                 onComplete(empleados)
             }
         }
     }
 
-    suspend fun eliminarEmpleado(idEmpleado: String) {
-        try {
-            db.collection("empleados").document(idEmpleado).delete().await()
-            println("Empleado eliminado con éxito")
-        } catch (e: Exception) {
-            println("Error al eliminar empleado: ${e.message}")
-        }
-    }
-
+    // Método para agregar un empleado
     suspend fun agregarEmpleado(empleado: Empleado): String {
         return try {
             val docRef = db.collection("empleados").add(empleado).await()
-            docRef.id
+            docRef.id // Retorna el ID del nuevo documento creado
         } catch (e: Exception) {
-            throw Exception("Error al agregar empleado: ${e.message}")
+            println("Error al agregar empleado: ${e.message}")
+            throw e
         }
     }
 
+    // Método para actualizar un empleado
     suspend fun actualizarEmpleado(idDocumento: String, empleado: Empleado) {
         try {
             db.collection("empleados").document(idDocumento).set(empleado).await()
         } catch (e: Exception) {
-            throw Exception("Error al actualizar empleado: ${e.message}")
+            println("Error al actualizar empleado: ${e.message}")
+            throw e
         }
     }
 
-
-    // Método para calcular el coste total del empleado
-    fun calcularCosteTotalEmpleado(empleado: Empleado): Double {
-        val salarioBase = empleado.salarioBase
-        val complementosSalariales = empleado.complementos.sumOf { it.valor }
-
-        // Cálculo de la Seguridad Social (aproximado según la información proporcionada)
-        val seguridadSocial = calcularSeguridadSocial(salarioBase)
-
-        return salarioBase + complementosSalariales + seguridadSocial
+    // Método para eliminar un empleado
+    suspend fun eliminarEmpleado(idDocumento: String) {
+        try {
+            db.collection("empleados").document(idDocumento).delete().await()
+        } catch (e: Exception) {
+            println("Error al eliminar empleado: ${e.message}")
+            throw e
+        }
     }
 
-    // Método para calcular la Seguridad Social
-    private fun calcularSeguridadSocial(salarioBase: Double): Double {
-        // Fórmula simplificada basada en el ejemplo de los search results
-        return (salarioBase * 0.236) +
-                (salarioBase * 0.055) +
-                (salarioBase * 0.035) +
-                (salarioBase * 0.002) +
-                (salarioBase * 0.006)
+    // Método para obtener eventos (una sola vez)
+    suspend fun obtenerEventos(): List<Evento> {
+        return try {
+            val snapshot = db.collection("eventos").get().await()
+            snapshot.toObjects(Evento::class.java) // Convierte los documentos a objetos Evento
+        } catch (e: Exception) {
+            println("Error al obtener eventos: ${e.message}")
+            emptyList() // Retorna una lista vacía en caso de error
+        }
     }
 
-    // Método para calcular salario neto
-    fun calcularSalarioNeto(empleado: Empleado): Double {
-        val salarioBruto = empleado.salarioBase
-        val complementos = empleado.complementos.sumOf { it.valor }
-
-        // Cálculo aproximado de retenciones
-        val retencionIRPF = calcularRetencionIRPF(salarioBruto)
-        val seguridadSocial = calcularSeguridadSocial(salarioBruto)
-
-        return salarioBruto + complementos - retencionIRPF - seguridadSocial
+    // Método para agregar un evento
+    suspend fun agregarEvento(evento: Evento): String {
+        return try {
+            val docRef = db.collection("eventos").add(evento).await()
+            docRef.id // Retorna el ID del nuevo evento creado
+        } catch (e: Exception) {
+            println("Error al agregar evento: ${e.message}")
+            throw e
+        }
     }
 
-    // Método simplificado de cálculo de retención de IRPF
-    private fun calcularRetencionIRPF(salarioBase: Double): Double {
-        // Cálculo simplificado de retención de IRPF
-        return when {
-            salarioBase < 12000 -> salarioBase * 0.10
-            salarioBase < 20000 -> salarioBase * 0.15
-            salarioBase < 35000 -> salarioBase * 0.20
-            else -> salarioBase * 0.25
+    // Método para actualizar un evento
+    suspend fun actualizarEvento(evento: Evento) {
+        try {
+            db.collection("eventos").document(evento.id).set(evento).await()
+        } catch (e: Exception) {
+            println("Error al actualizar evento: ${e.message}")
+            throw e
+        }
+    }
+
+    // Método para eliminar un evento
+    suspend fun eliminarEvento(idEvento: String) {
+        try {
+            db.collection("eventos").document(idEvento).delete().await()
+        } catch (e: Exception) {
+            println("Error al eliminar evento: ${e.message}")
+            throw e
+        }
+    }
+
+    // Método para obtener eventos en tiempo real (con addSnapshotListener)
+    fun obtenerEventosEnTiempoReal(onComplete: (List<Evento>) -> Unit) {
+        db.collection("eventos").addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                println("Error al obtener eventos: ${e.message}")
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                val eventos = snapshot.documents.mapNotNull { document ->
+                    document.toObject(Evento::class.java)
+                }
+                onComplete(eventos)
+            }
         }
     }
 }

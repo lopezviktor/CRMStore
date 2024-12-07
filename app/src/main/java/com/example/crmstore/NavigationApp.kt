@@ -14,6 +14,7 @@ import com.example.crmstore.ui.screens.PantallaRegistro
 import com.example.crmstore.ui.screens.clientes.PantallaAddCliente
 import com.example.crmstore.ui.screens.clientes.PantallaCliente
 import com.example.crmstore.ui.screens.clientes.PantallaFormularioClientes
+import com.example.crmstore.ui.screens.eventos.PantallaAgenda
 import com.example.crmstore.ui.screens.empleados.PantallaEmpleado
 import com.example.crmstore.ui.screens.empleados.PantallaFormularioEmpleados
 import com.example.crmstore.ui.screens.productos.PantallaAddProducto
@@ -41,6 +42,7 @@ fun NavigationApp(navHostController: NavHostController, authManager: AuthManager
         composable("PantallaEmpleado") { PantallaEmpleado (navHostController) }
         composable("PantallaAddEmpleado") { PantallaAddEmpleado (navHostController) }
         composable("PantallaFormularioEmpleados") { PantallaFormularioEmpleados (navHostController) }
+        composable("PantallaAgenda") { PantallaAgenda (navHostController)}
 
         //VENTAS
         composable("PantallaDashboardVentas") { PantallaDashboardVentas (navHostController) }
