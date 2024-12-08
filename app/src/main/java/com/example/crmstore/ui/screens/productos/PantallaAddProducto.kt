@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -60,14 +61,23 @@ fun PantallaAddProducto(
                 "Añadir Nuevo Producto",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .padding(top = 20.dp)
             )
 
             OutlinedTextField(
                 value = nombre,
                 onValueChange = { nombre = it },
                 label = { Text("Nombre del Producto") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             OutlinedTextField(
@@ -75,7 +85,14 @@ fun PantallaAddProducto(
                 onValueChange = { precio = it },
                 label = { Text("Precio") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             OutlinedTextField(
@@ -83,21 +100,42 @@ fun PantallaAddProducto(
                 onValueChange = { stock = it },
                 label = { Text("Stock") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             OutlinedTextField(
                 value = categoria,
                 onValueChange = { categoria = it },
                 label = { Text("Categoría") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             OutlinedTextField(
                 value = descripcion,
                 onValueChange = { descripcion = it },
                 label = { Text("Descripción") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             Button(
