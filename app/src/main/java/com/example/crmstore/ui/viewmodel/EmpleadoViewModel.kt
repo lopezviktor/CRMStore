@@ -27,7 +27,6 @@ class EmpleadoViewModel : ViewModel() {
         cargarEventos()
     }
 
-    // Método para cargar empleados en tiempo real (presumiblemente usando Firestore o una base de datos en tiempo real)
     private fun cargarEmpleadosEnTiempoReal() {
         empleadoRepository.obtenerEmpleados { empleadosObtenidos ->
             _empleados.value = empleadosObtenidos
