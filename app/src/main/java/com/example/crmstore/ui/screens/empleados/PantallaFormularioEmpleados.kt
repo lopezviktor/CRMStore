@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -74,7 +75,17 @@ fun PantallaFormularioEmpleados(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 label = { Text("Buscar empleado") },
-                modifier = Modifier.fillMaxWidth().padding(horizontal=16.dp, vertical=8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal=16.dp, vertical=8.dp),
+                textStyle = TextStyle(color = Color.White),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    disabledTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9)
+                )
             )
 
             // Resumen de próximos eventos.
@@ -169,15 +180,22 @@ fun EmpleadoItem(
         elevation=CardDefaults.cardElevation(defaultElevation=4.dp)
     ) {
 
-        Row(modifier=Modifier.fillMaxWidth().padding(16.dp), verticalAlignment=Alignment.CenterVertically) {
+        Row(modifier=Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment=Alignment.CenterVertically) {
 
-            Column(modifier=Modifier.weight(1f)) {
+            Column(modifier=Modifier
+                    .weight(1f)) {
 
-                Text(text="${empleado.nombre} ${empleado.apellidos}", style=MaterialTheme.typography.bodyLarge)
+                Text(text="${empleado.nombre} ${empleado.apellidos}",
+                    style=MaterialTheme.typography.bodyLarge)
 
-                Text(text="Puesto:${empleado.puesto ?: "No especificado"}", style=MaterialTheme.typography.bodyMedium)
+                Text(text="Puesto:${empleado.puesto ?: "No especificado"}",
+                    style=MaterialTheme.typography.bodyMedium)
 
-                Text(text="Salario Base:${empleado.salarioBase}€", style=MaterialTheme.typography.bodySmall)
+                Text(text="Salario Base:${empleado.salarioBase}€",
+                    style=MaterialTheme.typography.bodySmall)
 
             }
 
@@ -194,7 +212,10 @@ fun EmpleadoItem(
 @Composable
 fun EventoResumen(evento: Evento) {
 
-    Row(modifier=Modifier.fillMaxWidth().padding(vertical=4.dp), horizontalArrangement=Arrangement.SpaceBetween) {
+    Row(modifier=Modifier
+            .fillMaxWidth()
+            .padding(vertical=4.dp),
+        horizontalArrangement=Arrangement.SpaceBetween) {
 
         Text(evento.fecha, style=MaterialTheme.typography.bodySmall)
 

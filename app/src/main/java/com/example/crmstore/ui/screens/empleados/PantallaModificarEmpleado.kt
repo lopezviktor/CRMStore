@@ -1,7 +1,8 @@
+package com.example.crmstore.ui.screens.empleados
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -10,24 +11,49 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.crmstore.modelo.Cliente
-import com.example.crmstore.ui.viewmodel.ClienteViewModel
+import com.example.crmstore.modelo.Empleado
+import com.example.crmstore.ui.screens.clientes.validarCamposCliente
+import com.example.crmstore.ui.viewmodel.EmpleadoViewModel
 
 @Composable
-fun PantallaAddCliente(
+fun PantallaModificarEmpleado(
+    idEmpleado: String?, // ID del empleado a editar
     navHostController: NavHostController,
-    clienteViewModel: ClienteViewModel = viewModel()
+    empleadoViewModel: EmpleadoViewModel = viewModel()
 ) {
-    var dni by remember { mutableStateOf("") }
-    var nombre by remember { mutableStateOf("") }
-    var apellidos by remember { mutableStateOf("") }
-    var mail by remember { mutableStateOf("") }
-    var telefono by remember { mutableStateOf("") }
-    var direccion by remember { mutableStateOf("") }
+    if (idEmpleado == null) {
+        LaunchedEffect(Unit) {
+            navHostController.popBackStack()
+        }
+        return
+    }
+
+    val cargando by empleadoViewModel.cargando.collectAsState()// Accede al valor de cargando directamente
+    val empleadoExistente = empleadoViewModel.obtenerEmpleadoPorId(idEmpleado)
+
+    // Si estamos cargando o no encontramos el empleado, mostramos el indicador de carga
+    if (cargando || empleadoExistente == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Color.White)
+        }
+        return
+    }
+
+    // Estados para almacenar los datos editables del empleado
+    var nombre by remember { mutableStateOf(empleadoExistente.nombre) }
+    var apellidos by remember { mutableStateOf(empleadoExistente.apellidos) }
+    var mail by remember { mutableStateOf(empleadoExistente.mail ?: "") }
+    var telefono by remember { mutableStateOf(empleadoExistente.telefono ?: "") }
+    var puesto by remember { mutableStateOf(empleadoExistente.puesto ?: "") }
+    //var salarioBase by remember { mutableStateOf(empleadoExistente.salarioBase) }
+    var salarioBase by remember { mutableStateOf(empleadoExistente.salarioBase.toString()) }
+    var pagas by remember { mutableStateOf(empleadoExistente.pagas) }
     var mostrarDialogoExito by remember { mutableStateOf(false) }
     var mostrarDialogoError by remember { mutableStateOf(false) }
     var mensajeErrorValidacion by remember { mutableStateOf("") }
@@ -41,6 +67,7 @@ fun PantallaAddCliente(
                 )
             )
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,33 +76,21 @@ fun PantallaAddCliente(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "Añadir Nuevo Cliente",
+                "Editar Empleado",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
             )
 
-            OutlinedTextField(
-                value = dni,
-                onValueChange = { dni = it },
-                label = { Text("DNI") },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    disabledTextColor = Color.White,
-                    focusedLabelColor = Color(0xFF90CAF9),
-                    unfocusedLabelColor = Color(0xFF90CAF9),
-                    cursorColor = Color.White
-                )
-            )
-
+            // Campos editables para los atributos del empleado
             OutlinedTextField(
                 value = nombre,
                 onValueChange = { nombre = it },
                 label = { Text("Nombre") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
+                    //.padding(vertical = 8.dp),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
@@ -91,7 +106,9 @@ fun PantallaAddCliente(
                 value = apellidos,
                 onValueChange = { apellidos = it },
                 label = { Text("Apellidos") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
+                    //.padding(vertical = 8.dp),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
@@ -106,8 +123,10 @@ fun PantallaAddCliente(
             OutlinedTextField(
                 value = mail,
                 onValueChange = { mail = it },
-                label = { Text("Mail") },
-                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Email") },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                    //.padding(vertical = 8.dp),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
@@ -123,8 +142,9 @@ fun PantallaAddCliente(
                 value = telefono,
                 onValueChange = { telefono = it },
                 label = { Text("Teléfono") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
+                    //.padding(vertical = 8.dp),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
@@ -137,10 +157,12 @@ fun PantallaAddCliente(
             )
 
             OutlinedTextField(
-                value = direccion,
-                onValueChange = { direccion = it },
-                label = { Text("Dirección") },
-                modifier = Modifier.fillMaxWidth(),
+                value = puesto,
+                onValueChange = { puesto = it },
+                label = { Text("Puesto") },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                    //.padding(vertical = 8.dp),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
@@ -152,45 +174,89 @@ fun PantallaAddCliente(
                 )
             )
 
+            OutlinedTextField(
+                value = salarioBase.toString(),
+                //onValueChange = { salarioBase = it.toDoubleOrNull() ?: 0.0 },
+                onValueChange = {
+                    salarioBase = it
+                },
+                label = { Text("Salario Base (€)") },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                    //.padding(vertical = 8.dp),
+                textStyle = TextStyle(color = Color.White),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    disabledTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
+            )
+
+            OutlinedTextField(
+                value = pagas.toString(),
+                onValueChange = { pagas = it.toIntOrNull() ?: 12 },
+                label = { Text("Pagas") },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                    //.padding(vertical = 8.dp),
+                textStyle = TextStyle(color = Color.White),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    disabledTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
+            )
+
+            // Botón para guardar los cambios
             Button(
                 onClick = {
-                    val (esValido, mensaje) = validarCamposCliente(dni, nombre, apellidos, mail, telefono)
+                    val (esValido, mensaje) = validarCamposEmpleado(nombre, apellidos, mail, telefono, puesto, salarioBase)
                     if (esValido) {
-                        val nuevoCliente = Cliente(
-                            dni = dni,
+
+                        val salarioDouble = salarioBase.toDoubleOrNull() ?: 0.0
+                        val empleadoActualizado = Empleado(
+                            id = idEmpleado,
                             nombre = nombre,
                             apellidos = apellidos,
                             mail = mail,
-                            telefono = telefono.takeIf { it.isNotBlank() },
-                            direccion = direccion.takeIf { it.isNotBlank() }
+                            telefono = telefono,
+                            puesto = puesto,
+                            salarioBase = salarioDouble,
+                            pagas = pagas
                         )
-                        clienteViewModel.agregarCliente(nuevoCliente)
+                        empleadoViewModel.actualizarEmpleado(idEmpleado, empleadoActualizado)
                         mostrarDialogoExito = true
+
                     } else {
-                        mensajeErrorValidacion = mensaje ?: "Error de validación"
                         mostrarDialogoError = true
+                        mensajeErrorValidacion = mensaje ?: "Error de validación"
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
-                Text("Guardar Cliente")
+                Text("Guardar Cambios")
             }
-
             Spacer(modifier = Modifier.height(200.dp))
         }
 
         if (mostrarDialogoExito) {
             AlertDialog(
-                onDismissRequest = { },
-                title = { Text("Alta") },
-                text = { Text("Cliente creado correctamente.") },
+                onDismissRequest = { /* No hacemos nada para evitar el cierre automático */ },
+                title = { Text("Actualizado") },
+                text = { Text("Empleado actualizado correctamente.") },
                 confirmButton = {
                     TextButton(
                         onClick = {
                             mostrarDialogoExito = false
-                            navHostController.popBackStack()
+                            navHostController.popBackStack() // Vuelve a la pantalla anterior
                         }
                     ) {
                         Text("Aceptar")
@@ -211,31 +277,24 @@ fun PantallaAddCliente(
                 }
             )
         }
+
     }
 }
 
-fun validarCamposCliente(
-    dni: String,
+fun validarCamposEmpleado(
     nombre: String,
     apellidos: String,
     mail: String,
-    telefono: String
+    telefono: String,
+    puesto: String,
+    salarioBase: String
 ): Pair<Boolean, String?> {
-    // Validación de campos obligatorios y longitud máxima
-    if (dni.isBlank() || nombre.isBlank() || apellidos.isBlank() || mail.isBlank()) {
-        return Pair(false, "DNI, Nombre, Apellidos y Mail son obligatorios.")
-    }
-    if (dni.length > 9) {
-        return Pair(false, "El DNI no puede tener más de 9 caracteres.")
-    }
-    if (nombre.length > 50 || apellidos.length > 50 || mail.length > 50) {
-        return Pair(false, "Nombre, Apellidos y Mail no pueden exceder los 50 caracteres.")
+    if (nombre.isBlank() || apellidos.isBlank() || mail.isBlank() || salarioBase.isBlank()) {
+        return Pair(false, "Nombre, Apellidos, Mail y Salario Base son obligatorios.")
     }
 
-    // Validación de DNI
-    val dniRegex = "^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$".toRegex()
-    if (!dni.matches(dniRegex)) {
-        return Pair(false, "El formato del DNI no es válido.")
+    if (nombre.length > 50 || apellidos.length > 50 || mail.length > 50) {
+        return Pair(false, "Nombre, Apellidos y Mail no pueden exceder los 50 caracteres.")
     }
 
     // Validación de longitud y contenido del nombre y apellidos
@@ -246,20 +305,22 @@ fun validarCamposCliente(
         return Pair(false, "Nombre y apellidos no deben contener números.")
     }
 
-    // Validación de email
     val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z]{2,6}$".toRegex(RegexOption.IGNORE_CASE)
     if (!mail.matches(emailRegex)) {
         return Pair(false, "El formato del mail no es válido.")
     }
 
-    // Validación de teléfono
-    if (telefono.isNotBlank()) {
-        if (!telefono.all { it.isDigit() }) {
-            return Pair(false, "El teléfono solo debe contener números.")
-        }
-        if (telefono.length != 9) {
-            return Pair(false, "El teléfono debe tener 9 dígitos.")
-        }
+    if (telefono.isNotBlank() && (!telefono.all { it.isDigit() } || telefono.length != 9)) {
+        return Pair(false, "El teléfono debe ser un número de 9 dígitos.")
+    }
+
+    val salarioDouble = salarioBase.toDoubleOrNull()
+    if (salarioDouble == null || salarioDouble <= 0) {
+        return Pair(false, "El salario base debe ser un número positivo.")
+    }
+
+    if (puesto.isNotBlank() && puesto.length < 2) {
+        return Pair(false, "El puesto debe tener al menos 2 caracteres.")
     }
 
     return Pair(true, null)

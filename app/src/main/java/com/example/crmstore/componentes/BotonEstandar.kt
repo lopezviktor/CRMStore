@@ -24,7 +24,7 @@ fun BotonEstandar(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFE91E63),
+            containerColor = Color(0xFF673AB7),
             contentColor = Color.White
         ),
         modifier = modifier
