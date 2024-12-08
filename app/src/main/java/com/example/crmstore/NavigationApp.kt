@@ -29,7 +29,7 @@ import com.example.crmstore.ui.screens.ventas.PantallaVentas
 @Composable
 fun NavigationApp(navHostController: NavHostController, authManager: AuthManager, modifier: Modifier = Modifier) {
 
-    val startDestination = if (authManager.isUserLoggedIn()) "PantallaDashboardVentas" else "PantallaLogin"
+    val startDestination = if (authManager.isUserLoggedIn()) "PantallaFormularioEmpleados" else "PantallaLogin"
 
     NavHost(
         navController = navHostController,

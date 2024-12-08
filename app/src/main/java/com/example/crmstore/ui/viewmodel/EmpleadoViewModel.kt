@@ -2,7 +2,7 @@ package com.example.crmstore.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.crmstore.controlador.EmpleadoRepository
+import com.example.app.repository.EmpleadoRepository
 import com.example.crmstore.modelo.Empleado
 import com.example.crmstore.modelo.Evento
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,30 +17,27 @@ class EmpleadoViewModel : ViewModel() {
     private val _empleados = MutableStateFlow<List<Pair<String, Empleado>>>(emptyList())
     val empleados: StateFlow<List<Pair<String, Empleado>>> get() = _empleados
 
-    // Lista de eventos
+    // Lista de eventos en tiempo real
     private val _eventos = MutableStateFlow<List<Evento>>(emptyList())
     val eventos: StateFlow<List<Evento>> get() = _eventos
 
     init {
-        // Cargar empleados y eventos
+        // Cargar empleados y eventos en tiempo real
         cargarEmpleadosEnTiempoReal()
-        cargarEventos()
+        cargarEventosEnTiempoReal()
     }
 
+    // Cargar empleados en tiempo real
     private fun cargarEmpleadosEnTiempoReal() {
         empleadoRepository.obtenerEmpleados { empleadosObtenidos ->
             _empleados.value = empleadosObtenidos
         }
     }
 
-    // Cargar los eventos desde el repositorio
-    private fun cargarEventos() {
-        viewModelScope.launch {
-            try {
-                _eventos.value = empleadoRepository.obtenerEventos() // Asegúrate de que esto obtenga la lista de eventos correctamente
-            } catch (e: Exception) {
-                println("Error al cargar eventos: ${e.message}") // Manejo básico de errores
-            }
+    // Cargar eventos en tiempo real
+    private fun cargarEventosEnTiempoReal() {
+        empleadoRepository.obtenerEventosEnTiempoReal { eventosObtenidos ->
+            _eventos.value = eventosObtenidos
         }
     }
 
@@ -92,8 +89,8 @@ class EmpleadoViewModel : ViewModel() {
     fun agregarEvento(evento: Evento) {
         viewModelScope.launch {
             try {
-                val nuevoId = empleadoRepository.agregarEvento(evento) // Agrega evento en repositorio
-                cargarEventos() // Recarga los eventos después de agregar
+                empleadoRepository.agregarEvento(evento) // Agrega evento en repositorio
+                // No es necesario recargar manualmente porque los eventos están en tiempo real
             } catch (e: Exception) {
                 println("Error al agregar evento: ${e.message}")
             }
@@ -104,7 +101,7 @@ class EmpleadoViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 empleadoRepository.eliminarEvento(idEvento) // Elimina evento del repositorio
-                _eventos.value = _eventos.value.filter { it.id != idEvento } // Actualiza la lista de eventos localmente
+                // No es necesario actualizar localmente porque los eventos están en tiempo real
             } catch (e: Exception) {
                 println("Error al eliminar evento: ${e.message}")
             }
@@ -115,9 +112,7 @@ class EmpleadoViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 empleadoRepository.actualizarEvento(evento) // Actualiza evento en el repositorio
-                _eventos.value = _eventos.value.map {
-                    if (it.id == evento.id) evento else it
-                } // Actualiza la lista de eventos localmente
+                // No es necesario actualizar localmente porque los eventos están en tiempo real
             } catch (e: Exception) {
                 println("Error al actualizar evento: ${e.message}")
             }
