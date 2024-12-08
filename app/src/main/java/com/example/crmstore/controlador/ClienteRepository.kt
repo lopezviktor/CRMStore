@@ -4,6 +4,57 @@ import com.example.crmstore.modelo.Cliente
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
+class ClienteRepository {
+
+    private val db = FirebaseFirestore.getInstance()
+
+    fun obtenerClientes(onComplete: (List<Pair<String, Cliente>>) -> Unit) {
+        db.collection("clientes").addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                println("Error al obtener los clientes: ${e.message}")
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                val clientes = snapshot.documents.mapNotNull { document ->
+                    val cliente = document.toObject(Cliente::class.java)
+                    cliente?.let { document.id to it }
+                }
+                onComplete(clientes)
+            }
+        }
+    }
+
+    suspend fun eliminarCliente(idCliente: String) {
+        try {
+            db.collection("clientes").document(idCliente).delete().await()
+            println("Cliente eliminado con éxito")
+        } catch (e: Exception) {
+            println("Error al eliminar cliente: ${e.message}")
+        }
+    }
+
+    suspend fun agregarCliente(cliente: Cliente): String {
+        return try {
+            val docRef = db.collection("clientes").add(cliente).await()
+            docRef.id
+        } catch (e: Exception) {
+            throw Exception("Error al agregar cliente: ${e.message}")
+        }
+    }
+
+    suspend fun actualizarCliente(idDocumento: String, cliente: Cliente) {
+        try {
+            db.collection("clientes").document(idDocumento).set(cliente).await()
+        } catch (e: Exception) {
+            throw Exception("Error al actualizar cliente: ${e.message}")
+        }
+    }
+}
+
+
+
+/*
 // Clase responsable de manejar las operaciones relacionadas con clientes en la base de datos Firebase.
 class ClienteRepository {
 
@@ -53,3 +104,4 @@ class ClienteRepository {
         }
     }
 }
+*/

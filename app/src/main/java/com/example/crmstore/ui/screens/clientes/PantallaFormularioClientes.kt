@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -26,18 +27,17 @@ fun PantallaFormularioClientes(
     navHostController: NavHostController,
     clienteViewModel: ClienteViewModel = viewModel()
 ) {
-    // Observa el flujo de clientes desde el ViewModel
-    val clientes by clienteViewModel.clientes.collectAsState(emptyList())
+    val clientes by clienteViewModel.clientes.collectAsState()
     var mensajeBorrado by remember { mutableStateOf("") }
     var clienteAEliminar by remember { mutableStateOf<Pair<String, Cliente>?>(null) }
     var searchQuery by remember { mutableStateOf("") }
 
-    // Dialogo de confirmación para eliminar cliente
+    // Diálogo de confirmación para eliminar cliente
     clienteAEliminar?.let { (idDocumento, cliente) ->
         AlertDialog(
             onDismissRequest = { clienteAEliminar = null },
             title = { Text("Confirmación") },
-            text = { Text("¿Estás seguro de que deseas eliminar '${cliente.nombre}'?") },
+            text = { Text("¿Estás seguro de que deseas eliminar a '${cliente.nombre} ${cliente.apellidos}'?") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -82,19 +82,28 @@ fun PantallaFormularioClientes(
             )
 
             // Filtra los clientes según el texto de búsqueda
-            val filteredClients = clientes.filter {
-                it.second.nombre.contains(searchQuery, ignoreCase = true)
+            val filteredClientes = clientes.filter {
+                it.second.nombre.contains(searchQuery, ignoreCase = true) ||
+                        it.second.apellidos.contains(searchQuery, ignoreCase = true)
             }
 
-            if (filteredClients.isEmpty()) {
-                Text("No se encontraron clientes.", Modifier.padding(16.dp))
+            // Lista de clientes
+            if (filteredClientes.isEmpty()) {
+                Text(
+                    text = "No se encontraron clientes.",
+                    color = Color.White,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             } else {
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
                         .padding(16.dp)
                 ) {
-                    items(filteredClients) { (idDocumento, cliente) ->
+                    items(filteredClientes) { (idDocumento, cliente) ->
                         ClienteItem(
                             cliente = cliente,
                             onEdit = {
@@ -123,20 +132,24 @@ fun PantallaFormularioClientes(
             }
 
             // Botón para agregar nuevo cliente
-            Button(
+            FloatingActionButton(
                 onClick = { navHostController.navigate("PantallaAddCliente") },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .align(Alignment.End)
+                    .padding(16.dp)
             ) {
-                Text("Agregar Cliente")
+                Icon(Icons.Default.Add, contentDescription = "Agregar Cliente")
             }
         }
     }
 }
 
 @Composable
-fun ClienteItem(cliente: Cliente, onEdit: (Cliente) -> Unit, onDelete: (Cliente) -> Unit) {
+fun ClienteItem(
+    cliente: Cliente,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -151,28 +164,23 @@ fun ClienteItem(cliente: Cliente, onEdit: (Cliente) -> Unit, onDelete: (Cliente)
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                // Nombre completo del cliente
                 Text(
                     text = "${cliente.nombre} ${cliente.apellidos}",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                // Email del cliente
                 Text(
-                    text = "Email: ${cliente.mail}",
+                    text = "Email: ${cliente.mail ?: "No especificado"}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Teléfono: ${cliente.telefono ?: "No especificado"}",
                     style = MaterialTheme.typography.bodySmall
                 )
-                // Teléfono del cliente (si está disponible)
-                cliente.telefono?.let {
-                    Text(
-                        text = "Teléfono: $it",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
             }
-            IconButton(onClick = { onEdit(cliente) }) {
+            IconButton(onClick = onEdit) {
                 Icon(Icons.Default.Edit, contentDescription = "Editar Cliente")
             }
-            IconButton(onClick = { onDelete(cliente) }) {
+            IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete, contentDescription = "Eliminar Cliente")
             }
         }
