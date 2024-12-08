@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,9 +38,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.crmstore.MainActivity
 import com.example.crmstore.R
 import com.example.crmstore.componentes.BotonEstandar
-import com.example.crmstore.MainActivity
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -49,7 +50,6 @@ fun PantallaLogin(navHostController: NavHostController){
     var mensajeError by remember { mutableStateOf("") }
 
     val auth = FirebaseAuth.getInstance()
-
     val activity = LocalContext.current as? MainActivity
 
     Box(
@@ -57,7 +57,7 @@ fun PantallaLogin(navHostController: NavHostController){
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF86cdd8), Color(0xFF2d6a6d))
+                    colors = listOf(Color(0xFF1B88B6), Color(0xFF0A1D79))
                 )
             ),
         contentAlignment = Alignment.Center
@@ -106,7 +106,13 @@ fun PantallaLogin(navHostController: NavHostController){
                         auth.signInWithEmailAndPassword(usuario, password)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    navHostController.navigate(route = "PantallaDashboardVentas")
+                                    val currentUser = auth.currentUser
+                                    currentUser?.let {
+                                        mensajeError = "Bienvenido, ${it.email ?: "Usuario"}"
+                                    }
+                                    navHostController.navigate(route = "PantallaDashboardVentas") {
+                                        popUpTo("PantallaLogin") { inclusive = true }
+                                    }
                                 } else {
                                     mensajeError = task.exception?.message ?: "Error de inicio de sesión"
                                 }
@@ -117,11 +123,19 @@ fun PantallaLogin(navHostController: NavHostController){
                 },
                 modifier = Modifier.fillMaxWidth()
             )
-
+            // LaunchedEffect para manejar la navegación después del mensaje de bienvenida
+            LaunchedEffect(mensajeError) {
+                if (mensajeError.startsWith("Bienvenido")) {
+                    kotlinx.coroutines.delay(10000)
+                    navHostController.navigate(route = "PantallaDashboardVentas") {
+                        popUpTo("PantallaLogin") { inclusive = true }
+                    }
+                }
+            }
             if (mensajeError.isNotEmpty()) {
                 Text(
                     text = mensajeError,
-                    color = Color.Red,
+                    color = if (mensajeError.startsWith("Bienvenido")) Color.Green else Color.Red,
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }

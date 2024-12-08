@@ -25,6 +25,7 @@ import com.example.crmstore.ui.screens.productos.PantallaFormularioProductos
 import com.example.crmstore.ui.screens.ventas.PantallaAddVentas
 import com.example.crmstore.ui.screens.ventas.PantallaDashboardVentas
 import com.example.crmstore.ui.screens.ventas.PantallaVentas
+import com.example.crmstore.ui.viewmodel.VentaViewModel
 
 @Composable
 fun NavigationApp(navHostController: NavHostController, authManager: AuthManager, modifier: Modifier = Modifier) {
@@ -63,7 +64,7 @@ fun NavigationApp(navHostController: NavHostController, authManager: AuthManager
         composable("PantallaAgenda") { PantallaAgenda (navHostController)}
 
         //VENTAS
-        composable("PantallaDashboardVentas") { PantallaDashboardVentas (navHostController) }
+        composable("PantallaDashboardVentas") { PantallaDashboardVentas ( viewModel = VentaViewModel(), navHostController = navHostController) }
         composable("PantallaVentas") { PantallaVentas(ventaViewModel = viewModel(), navHostController = navHostController) }
         composable("PantallaAddVentas") { PantallaAddVentas(ventaViewModel = viewModel(), navHostController = navHostController) }
 

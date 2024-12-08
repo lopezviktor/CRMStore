@@ -46,7 +46,7 @@ fun PantallaRegistro(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF86cdd8), Color(0xFF2d6a6d))
+                    colors = listOf(Color(0xFF1B88B6), Color(0xFF0A1D79))
                 )
             ),
         contentAlignment = Alignment.Center

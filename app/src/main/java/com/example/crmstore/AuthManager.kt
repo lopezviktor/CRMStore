@@ -21,8 +21,8 @@ class AuthManager(
 
     init {
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(clientId) // Asegúrate de que el clientId es el correcto de Firebase
-            .requestEmail() // Permite acceder al correo electrónico del usuario
+            .requestIdToken(clientId)
+            .requestEmail()
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(activity, googleSignInOptions)
@@ -87,8 +87,10 @@ class AuthManager(
         onFailure: (Exception) -> Unit
     ) {
         try {
-            FirebaseAuth.getInstance().signOut()
-            onSuccess()
+            googleSignInClient.signOut().addOnCompleteListener {
+                FirebaseAuth.getInstance().signOut()
+                onSuccess()
+            }
         } catch (e: Exception) {
             onFailure(e)
         }
