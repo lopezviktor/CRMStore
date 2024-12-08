@@ -79,4 +79,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore-ktx")
     implementation ("com.google.android.gms:play-services-basement:18.2.")
     implementation ("androidx.compose.material3:material3:1.2.0-alpha02")
+    implementation ("com.google.accompanist:accompanist-pager:0.30.1")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.30.1")
+
 }
