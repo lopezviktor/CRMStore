@@ -1,5 +1,6 @@
 package com.example.crmstore.ui.viewmodel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.crmstore.controlador.EmpleadoRepository
@@ -21,16 +22,20 @@ class EmpleadoViewModel : ViewModel() {
     private val _eventos = MutableStateFlow<List<Evento>>(emptyList())
     val eventos: StateFlow<List<Evento>> get() = _eventos
 
+    private val _cargando = MutableStateFlow(true)
+    val cargando: StateFlow<Boolean> get() = _cargando
+
     init {
         // Cargar empleados y eventos
         cargarEmpleadosEnTiempoReal()
         cargarEventos()
     }
 
-    // Método para cargar empleados en tiempo real (presumiblemente usando Firestore o una base de datos en tiempo real)
+    // Método para cargar empleados en tiempo real
     private fun cargarEmpleadosEnTiempoReal() {
         empleadoRepository.obtenerEmpleados { empleadosObtenidos ->
             _empleados.value = empleadosObtenidos
+            _cargando.value = false  // Cambiar estado de carga cuando se completan los datos
         }
     }
 
@@ -69,24 +74,38 @@ class EmpleadoViewModel : ViewModel() {
         }
     }
 
-    // Actualizar los datos de un empleado existente
-    fun actualizarEmpleado(idDocumento: String, empleadoActualizado: Empleado) {
+    /*
+    // Estado de carga usando mutableStateOf
+    var cargando = mutableStateOf(false)
+        private set
+
+     */
+
+    // Método para obtener un empleado por ID
+    fun obtenerEmpleadoPorId(idEmpleado: String): Empleado? {
+        return _empleados.value.find { it.first == idEmpleado }?.second
+    }
+
+    // Método para actualizar un empleado
+    fun actualizarEmpleado(idEmpleado: String, empleadoActualizado: Empleado) {
         viewModelScope.launch {
             try {
-                empleadoRepository.actualizarEmpleado(idDocumento, empleadoActualizado) // Actualiza en el repositorio
+                val empleadoExistente = _empleados.value.find { it.first == idEmpleado }
+                if (empleadoExistente == null) {
+                    println("Error: No se encontró empleado con ID $idEmpleado.")
+                    return@launch
+                }
+
+                empleadoRepository.actualizarEmpleado(idEmpleado, empleadoActualizado)
                 _empleados.value = _empleados.value.map {
-                    if (it.first == idDocumento) idDocumento to empleadoActualizado else it
-                } // Actualiza localmente la lista
+                    if (it.first == idEmpleado) idEmpleado to empleadoActualizado else it
+                }
             } catch (e: Exception) {
                 println("Error al actualizar empleado: ${e.message}")
             }
         }
     }
 
-    // Obtener un empleado por su ID
-    fun obtenerEmpleadoPorId(idDocumento: String): Empleado? {
-        return _empleados.value.find { it.first == idDocumento }?.second
-    }
 
     // Métodos para agregar, eliminar o actualizar eventos
 
@@ -124,4 +143,25 @@ class EmpleadoViewModel : ViewModel() {
             }
         }
     }
+
+    /*
+        // Actualizar los datos de un empleado existente
+    fun actualizarEmpleado(idDocumento: String, empleadoActualizado: Empleado) {
+        viewModelScope.launch {
+            try {
+                empleadoRepository.actualizarEmpleado(idDocumento, empleadoActualizado) // Actualiza en el repositorio
+                _empleados.value = _empleados.value.map {
+                    if (it.first == idDocumento) idDocumento to empleadoActualizado else it
+                } // Actualiza localmente la lista
+            } catch (e: Exception) {
+                println("Error al actualizar empleado: ${e.message}")
+            }
+        }
+    }
+
+    // Obtener un empleado por su ID
+    fun obtenerEmpleadoPorId(idDocumento: String): Empleado? {
+        return _empleados.value.find { it.first == idDocumento }?.second
+    }
+     */
 }

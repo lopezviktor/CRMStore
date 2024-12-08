@@ -10,7 +10,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.crmstore.ui.screens.PantallaInicio
+//import com.example.crmstore.ui.screens.PantallaInicio
 import com.example.crmstore.ui.screens.MainScreen
 import com.example.crmstore.ui.screens.PantallaLogin
 import com.example.crmstore.ui.screens.PantallaPerfil
@@ -22,6 +22,7 @@ import com.example.crmstore.ui.screens.clientes.PantallaModificarCliente
 import com.example.crmstore.ui.screens.eventos.PantallaAgenda
 import com.example.crmstore.ui.screens.empleados.PantallaEmpleado
 import com.example.crmstore.ui.screens.empleados.PantallaFormularioEmpleados
+import com.example.crmstore.ui.screens.empleados.PantallaModificarEmpleado
 import com.example.crmstore.ui.screens.productos.PantallaAddProducto
 import com.example.crmstore.ui.screens.productos.PantallaFormularioProductos
 import com.example.crmstore.ui.screens.productos.PantallaProducto
@@ -62,8 +63,26 @@ fun NavigationApp(navHostController: NavHostController, authManager: AuthManager
         //EMPLEADO
         composable("PantallaEmpleado") { PantallaEmpleado (navHostController) }
         composable("PantallaAddEmpleado") { PantallaAddEmpleado (navHostController) }
-        composable("PantallaFormularioEmpleados") { PantallaFormularioEmpleados (navHostController) }
+        //composable("PantallaFormularioEmpleados") { PantallaFormularioEmpleados (navHostController) }
         composable("PantallaAgenda") { PantallaAgenda (navHostController)}
+
+        composable("PantallaFormularioEmpleados") {
+            PantallaFormularioEmpleados(
+                navHostController = navHostController,
+                empleadoViewModel = viewModel()
+            )
+        }
+        composable(
+            route = "PantallaModificarEmpleado/{idEmpleado}",
+            arguments = listOf(navArgument("idEmpleado") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val idEmpleado = backStackEntry.arguments?.getString("idEmpleado")
+            PantallaModificarEmpleado(
+                idEmpleado = idEmpleado,
+                navHostController = navHostController
+            )
+        }
+
 
         //VENTAS
         composable("PantallaDashboardVentas") { PantallaDashboardVentas (navHostController) }

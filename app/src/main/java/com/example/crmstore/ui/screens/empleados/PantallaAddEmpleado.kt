@@ -27,7 +27,10 @@ fun PantallaAddEmpleado(
     var telefono by remember { mutableStateOf("") }
     var puesto by remember { mutableStateOf("") }
     var salarioBase by remember { mutableStateOf("") }
-    var mensajeError by remember { mutableStateOf<String?>(null) }
+    //var mensajeErrorValidacion by remember { mutableStateOf<String?>(null) }
+    var mostrarDialogoExito by remember { mutableStateOf(false) }
+    var mensajeErrorValidacion by remember { mutableStateOf("") }
+    var mostrarDialogoError by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -56,21 +59,42 @@ fun PantallaAddEmpleado(
                 value = nombre,
                 onValueChange = { nombre = it },
                 label = { Text("Nombre") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             OutlinedTextField(
                 value = apellidos,
                 onValueChange = { apellidos = it },
                 label = { Text("Apellidos") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             OutlinedTextField(
                 value = mail,
                 onValueChange = { mail = it },
                 label = { Text("Mail") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             OutlinedTextField(
@@ -78,14 +102,28 @@ fun PantallaAddEmpleado(
                 onValueChange = { telefono = it },
                 label = { Text("Teléfono") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             OutlinedTextField(
                 value = puesto,
                 onValueChange = { puesto = it },
                 label = { Text("Puesto") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             OutlinedTextField(
@@ -93,25 +131,33 @@ fun PantallaAddEmpleado(
                 onValueChange = { salarioBase = it },
                 label = { Text("Salario Base") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9),
+                    cursorColor = Color.White
+                )
             )
 
             Button(
                 onClick = {
-                    val (esValido, mensaje) = validarCampos(nombre, apellidos, mail, telefono, puesto, salarioBase)
+                    val (esValido, mensaje) = validarCamposEmpleado(nombre, apellidos, mail, telefono, puesto, salarioBase)
                     if (esValido) {
                         val nuevoEmpleado = Empleado(
                             nombre = nombre,
                             apellidos = apellidos,
                             mail = mail,
-                            telefono = telefono,
-                            puesto = puesto,
+                            telefono = telefono.takeIf { it.isNotBlank() },
+                            puesto = puesto.takeIf { it.isNotBlank() },
                             salarioBase = salarioBase.toDouble()
                         )
                         empleadoViewModel.agregarEmpleado(nuevoEmpleado)
-                        navHostController.popBackStack()
+                        mostrarDialogoExito = true
                     } else {
-                        mensajeError = mensaje
+                        mostrarDialogoError = true
+                        mensajeErrorValidacion = mensaje ?: "Error de validación"
                     }
                 },
                 modifier = Modifier
@@ -121,14 +167,48 @@ fun PantallaAddEmpleado(
                 Text("Guardar Empleado")
             }
 
-            mensajeError?.let {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            mensajeErrorValidacion?.let {
                 Text(it, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
             }
         }
+
+        if (mostrarDialogoExito) {
+            AlertDialog(
+                onDismissRequest = { },
+                title = { Text("Alta") },
+                text = { Text("Empleado creado correctamente.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            mostrarDialogoExito = false
+                            navHostController.popBackStack()
+                        }
+                    ) {
+                        Text("Aceptar")
+                    }
+                }
+            )
+        }
+
+        if (mostrarDialogoError) {
+            AlertDialog(
+                onDismissRequest = { mostrarDialogoError = false },
+                title = { Text("Error de Validación") },
+                text = { Text(mensajeErrorValidacion) },
+                confirmButton = {
+                    TextButton(onClick = { mostrarDialogoError = false }) {
+                        Text("Aceptar")
+                    }
+                }
+            )
+        }
+
     }
 }
 
-fun validarCampos(
+fun validarCamposEmpleado(
     nombre: String,
     apellidos: String,
     mail: String,
@@ -136,29 +216,39 @@ fun validarCampos(
     puesto: String,
     salarioBase: String
 ): Pair<Boolean, String?> {
-    // Validar que los campos obligatorios no estén vacíos
-    if (nombre.isBlank() || apellidos.isBlank() || mail.isBlank() || puesto.isBlank() || salarioBase.isBlank()) {
-        return Pair(false, "Todos los campos son obligatorios excepto el teléfono.")
+    if (nombre.isBlank() || apellidos.isBlank() || mail.isBlank() || salarioBase.isBlank()) {
+        return Pair(false, "Nombre, Apellidos, Mail y Salario Base son obligatorios.")
     }
 
-    // Validar formato de mail
-    val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})".toRegex()
+    if (nombre.length > 50 || apellidos.length > 50 || mail.length > 50) {
+        return Pair(false, "Nombre, Apellidos y Mail no pueden exceder los 50 caracteres.")
+    }
+
+    // Validación de longitud y contenido del nombre y apellidos
+    if (nombre.length < 2 || apellidos.length < 2) {
+        return Pair(false, "Nombre y apellidos deben tener al menos 2 caracteres.")
+    }
+    if (nombre.any { it.isDigit() } || apellidos.any { it.isDigit() }) {
+        return Pair(false, "Nombre y apellidos no deben contener números.")
+    }
+
+    val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z]{2,6}$".toRegex(RegexOption.IGNORE_CASE)
     if (!mail.matches(emailRegex)) {
         return Pair(false, "El formato del mail no es válido.")
     }
 
-    // Validar que el teléfono solo contenga números (si se proporciona)
-    if (telefono.isNotBlank() && !telefono.all { it.isDigit() }) {
-        return Pair(false, "El teléfono solo debe contener números.")
+    if (telefono.isNotBlank() && (!telefono.all { it.isDigit() } || telefono.length != 9)) {
+        return Pair(false, "El teléfono debe ser un número de 9 dígitos.")
     }
 
-    // Validar que el salario base sea un número válido
-    try {
-        salarioBase.toDouble()
-    } catch (e: NumberFormatException) {
-        return Pair(false, "El salario base debe ser un número válido.")
+    val salarioDouble = salarioBase.toDoubleOrNull()
+    if (salarioDouble == null || salarioDouble <= 0) {
+        return Pair(false, "El salario base debe ser un número positivo.")
     }
 
-    // Si todas las validaciones pasan, retornar true
+    if (puesto.isNotBlank() && puesto.length < 2) {
+        return Pair(false, "El puesto debe tener al menos 2 caracteres.")
+    }
+
     return Pair(true, null)
 }
