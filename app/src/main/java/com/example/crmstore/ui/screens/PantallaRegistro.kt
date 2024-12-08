@@ -3,8 +3,10 @@ package com.example.crmstore.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
@@ -24,13 +26,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import com.example.crmstore.componentes.BotonEstandar
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun PantallaRegistro(
-    navHostController: NavHostController
+    navController: NavController
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -44,7 +46,7 @@ fun PantallaRegistro(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF2196F3), Color(0xFF1F2859))
+                    colors = listOf(Color(0xFF86cdd8), Color(0xFF2d6a6d))
                 )
             ),
         contentAlignment = Alignment.Center
@@ -97,6 +99,7 @@ fun PantallaRegistro(
                 visualTransformation = PasswordVisualTransformation()
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
 
             BotonEstandar(
                 texto = "Registrarse",
@@ -105,7 +108,7 @@ fun PantallaRegistro(
                         if (password == confirmPassword) {
                             registrarUsuario(email, password, auth) { resultado ->
                                 if (resultado == "Éxito") {
-                                    navHostController.navigate("pantallaLogin")
+                                    navController.navigate("pantallaLogin")
                                 } else {
                                     mensajeError = resultado
                                 }
@@ -117,6 +120,12 @@ fun PantallaRegistro(
                         mensajeError = "Por favor, complete todos los campos."
                     }
                 },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            BotonEstandar(
+                texto = "Pantalla Login",
+                onClick = { navController.navigate(route = "PantallaLogin") },
                 modifier = Modifier.fillMaxWidth()
             )
 

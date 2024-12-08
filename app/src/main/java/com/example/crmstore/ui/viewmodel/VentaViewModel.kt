@@ -8,37 +8,69 @@ import com.example.crmstore.controlador.VentaRepository
 import com.example.crmstore.modelo.DetalleVenta
 import com.example.crmstore.modelo.Producto
 import com.example.crmstore.modelo.Venta
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 class VentaViewModel : ViewModel() {
 
     private val ventaRepository = VentaRepository()
 
-    // Lista observable de ventas para la UI
+    // Listas observables para la UI
+    val clientes = mutableStateListOf<String>() // Lista de clientes desde Firebase
+    val empleados = mutableStateListOf<String>() // Lista de empleados desde Firebase
     val ventas = mutableStateListOf<Pair<String, Venta>>() // El ID del documento y el objeto Venta
-
-    // Mensaje para notificaciones en la UI
-    val mensaje = mutableStateOf("")
-
-    // Carrito de productos seleccionados
-    val carrito = mutableStateListOf<DetalleVenta>()
-
-    // Cliente y empleado seleccionados
-    val clienteSeleccionado = mutableStateOf<String?>(null)
-    val empleadoSeleccionado = mutableStateOf<String?>(null)
+    val productos = mutableStateListOf<Producto>() // Lista de productos desde Firebase
 
     // Mapa para asociar productos con sus IDs de Firebase
     private val productosMap = mutableMapOf<String, Producto>()
 
-    // Lista de productos observables para la UI
-    val productos = mutableStateListOf<Producto>()
+    // Estados observables
+    val mensaje = mutableStateOf("")
+    val carrito = mutableStateListOf<DetalleVenta>() // Carrito de productos seleccionados
+    val clienteSeleccionado = mutableStateOf<String?>(null)
+    val empleadoSeleccionado = mutableStateOf<String?>(null)
 
     init {
+        cargarClientes()
+        cargarEmpleados()
         cargarVentasEnTiempoReal()
         cargarProductos()
     }
 
-    // Función para cargar ventas en tiempo real desde Firebase
+    // Métodos existentes -------------------------------------------------------------
+
+    fun cargarClientes() {
+        val db = FirebaseFirestore.getInstance()
+        val clientesCollection = db.collection("clientes")
+
+        clientesCollection.get().addOnSuccessListener { snapshot ->
+            clientes.clear()
+            snapshot.documents.forEach { document ->
+                val nombre = document.getString("nombre") ?: "Nombre desconocido"
+                val apellidos = document.getString("apellidos") ?: "Apellidos desconocidos"
+                clientes.add("$nombre $apellidos")
+            }
+        }.addOnFailureListener { e ->
+            println("Error al cargar clientes: ${e.message}")
+        }
+    }
+
+    fun cargarEmpleados() {
+        val db = FirebaseFirestore.getInstance()
+        val empleadosCollection = db.collection("empleados")
+
+        empleadosCollection.get().addOnSuccessListener { snapshot ->
+            empleados.clear()
+            snapshot.documents.forEach { document ->
+                val nombre = document.getString("nombre") ?: "Nombre desconocido"
+                val apellidos = document.getString("apellidos") ?: "Apellidos desconocidos"
+                empleados.add("$nombre $apellidos")
+            }
+        }.addOnFailureListener { e ->
+            println("Error al cargar empleados: ${e.message}")
+        }
+    }
+
     private fun cargarVentasEnTiempoReal() {
         ventaRepository.obtenerVentasEnTiempoReal { ventasObtenidas ->
             ventas.clear()
@@ -46,8 +78,7 @@ class VentaViewModel : ViewModel() {
         }
     }
 
-    // Función para cargar productos desde Firebase y mapear sus IDs
-    private fun cargarProductos() {
+    fun cargarProductos() {
         ventaRepository.cargarProductos { productosObtenidos, map ->
             productos.clear()
             productos.addAll(productosObtenidos)
@@ -56,16 +87,13 @@ class VentaViewModel : ViewModel() {
         }
     }
 
-    // Función para agregar un producto al carrito
     fun agregarProductoAlCarrito(producto: Producto, cantidad: Int) {
-        val productoId = producto.nombre // O usa un identificador único si lo tienes
+        val productoId = producto.nombre
         val productoEnCarrito = carrito.find { it.productoId == productoId }
 
         if (productoEnCarrito != null) {
-            // Si ya está en el carrito, actualiza la cantidad
             productoEnCarrito.cantidad += cantidad
         } else {
-            // Si no está en el carrito, agrégalo
             carrito.add(
                 DetalleVenta(
                     productoId = productoId,
@@ -77,17 +105,14 @@ class VentaViewModel : ViewModel() {
         }
     }
 
-    // Función para eliminar un producto del carrito
     fun eliminarProductoDelCarrito(productoId: String) {
         carrito.removeAll { it.productoId == productoId }
     }
 
-    // Función para calcular el total del carrito
     fun calcularTotalCarrito(): Double {
         return carrito.sumOf { it.cantidad * it.precioUnitario }
     }
 
-    // Función para agregar una nueva venta
     fun agregarVenta() {
         val nuevaVenta = Venta(
             cliente = clienteSeleccionado.value ?: "",
@@ -103,14 +128,11 @@ class VentaViewModel : ViewModel() {
         }
     }
 
-    // Función para eliminar una venta por el ID del documento generado por Firestore
     fun eliminarVenta(documentId: String) {
         viewModelScope.launch {
             val resultado = ventaRepository.eliminarVenta(documentId)
             if (resultado) {
-                val ventasFiltradas = ventas.filter { it.first != documentId }
-                ventas.clear()
-                ventas.addAll(ventasFiltradas)
+                ventas.removeAll { it.first == documentId }
                 mensaje.value = "Venta eliminada exitosamente"
             } else {
                 mensaje.value = "Error al eliminar la venta en Firebase"
@@ -118,10 +140,57 @@ class VentaViewModel : ViewModel() {
         }
     }
 
-    // Función para limpiar el formulario después de confirmar una venta
     private fun limpiarFormulario() {
         carrito.clear()
         clienteSeleccionado.value = null
         empleadoSeleccionado.value = null
+    }
+
+    // Métodos nuevos para el dashboard ---------------------------------------------
+
+    fun cargarVentas() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("ventas")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                ventas.clear()
+                snapshot.documents.forEach { document ->
+                    val venta = document.toObject(Venta::class.java)
+                    if (venta != null) {
+                        ventas.add(Pair(document.id, venta)) // Guardar el documento ID junto con la venta
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                println("Error al cargar ventas: ${e.message}")
+            }
+    }
+
+    // Total de ventas
+    fun calcularTotalVentas(): Double {
+        return ventas.sumOf { it.second.total }
+    }
+
+    // Producto más vendido
+    fun obtenerProductoMasVendido(): String {
+        val conteoProductos = mutableMapOf<String, Int>()
+
+        ventas.forEach { (_, venta) ->
+            venta.productosVendidos.forEach { producto ->
+                conteoProductos[producto.nombre] = conteoProductos.getOrDefault(producto.nombre, 0) + producto.cantidad
+            }
+        }
+
+        return conteoProductos.maxByOrNull { it.value }?.key ?: "Ninguno"
+    }
+
+    // Promedio de venta por cliente
+    fun calcularPromedioVentaPorCliente(): Double {
+        val clientesUnicos = ventas.map { it.second.cliente }.distinct()
+        return if (clientesUnicos.isNotEmpty()) {
+            calcularTotalVentas() / clientesUnicos.size
+        } else {
+            0.0
+        }
     }
 }

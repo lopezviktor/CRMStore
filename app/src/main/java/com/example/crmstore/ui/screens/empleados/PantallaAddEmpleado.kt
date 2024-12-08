@@ -1,12 +1,8 @@
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,8 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.crmstore.modelo.Empleado
-import com.example.crmstore.modelo.Complemento
-import com.example.crmstore.modelo.TipoComplemento
 import com.example.crmstore.ui.viewmodel.EmpleadoViewModel
 
 @Composable
@@ -33,8 +27,6 @@ fun PantallaAddEmpleado(
     var telefono by remember { mutableStateOf("") }
     var puesto by remember { mutableStateOf("") }
     var salarioBase by remember { mutableStateOf("") }
-    var complementos by remember { mutableStateOf(listOf<Complemento>()) }
-    var showComplementoDialog by remember { mutableStateOf(false) }
     var mensajeError by remember { mutableStateOf<String?>(null) }
 
     Box(
@@ -104,24 +96,6 @@ fun PantallaAddEmpleado(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Lista de complementos
-            complementos.forEach { complemento ->
-                Text("${complemento.tipo}: ${complemento.valor}€", color = Color.White)
-            }
-
-            Button(onClick = { showComplementoDialog = true }) {
-                Text("Añadir Complemento")
-            }
-
-            if (showComplementoDialog) {
-                ComplementoDialog(
-                    onDismiss = { showComplementoDialog = false },
-                    onComplementoAdded = { nuevoComplemento ->
-                        complementos += nuevoComplemento
-                    }
-                )
-            }
-
             Button(
                 onClick = {
                     val (esValido, mensaje) = validarCampos(nombre, apellidos, mail, telefono, puesto, salarioBase)
@@ -132,8 +106,7 @@ fun PantallaAddEmpleado(
                             mail = mail,
                             telefono = telefono,
                             puesto = puesto,
-                            salarioBase = salarioBase.toDouble(),
-                            complementos = complementos
+                            salarioBase = salarioBase.toDouble()
                         )
                         empleadoViewModel.agregarEmpleado(nuevoEmpleado)
                         navHostController.popBackStack()
@@ -153,83 +126,6 @@ fun PantallaAddEmpleado(
             }
         }
     }
-}
-
-@Composable
-fun ComplementoDialog(
-    onDismiss: () -> Unit,
-    onComplementoAdded: (Complemento) -> Unit
-) {
-    var tipoComplemento by remember { mutableStateOf(TipoComplemento.ANTIGUEDAD) }
-    var valorComplemento by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Añadir Complemento") },
-        text = {
-            Column {
-                Box {
-                    OutlinedTextField(
-                        value = tipoComplemento.name,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Tipo de Complemento") },
-                        trailingIcon = {
-                            Icon(
-                                if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                                "Expandir"
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { expanded = !expanded }
-                    )
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        TipoComplemento.values().forEach { tipo ->
-                            DropdownMenuItem(
-                                text = { Text(tipo.name) },
-                                onClick = {
-                                    tipoComplemento = tipo
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = valorComplemento,
-                    onValueChange = { valorComplemento = it },
-                    label = { Text("Valor") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                val valor = valorComplemento.toDoubleOrNull()
-                if (valor != null) {
-                    onComplementoAdded(Complemento(tipoComplemento, valor))
-                    onDismiss()
-                }
-            }) {
-                Text("Añadir")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
-        }
-    )
 }
 
 fun validarCampos(
