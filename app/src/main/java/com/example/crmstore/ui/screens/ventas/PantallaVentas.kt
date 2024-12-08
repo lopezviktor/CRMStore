@@ -1,7 +1,10 @@
 package com.example.crmstore.ui.screens.ventas
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,12 +12,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.crmstore.modelo.Venta
@@ -34,75 +53,130 @@ fun PantallaVentas(
     navHostController: NavHostController
 ) {
     val ventas = ventaViewModel.ventas
+    var searchQuery by remember { mutableStateOf("") }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Botón para ir a la pantalla de añadir ventas
-        Button(
-            onClick = { navHostController.navigate("PantallaAddVentas") },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Añadir Nueva Venta")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Encabezado
-        Text(text = "Ventas Existentes", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Lista de ventas
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(ventas) { (id, venta) ->  // Desestructurar el Pair
-                VentaItem(
-                    venta = venta,  // Pasar solo el objeto Venta
-                    onEliminarClick = {
-                        ventaViewModel.eliminarVenta(id)  // Usar el ID para eliminar
-                    }
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color(0xFF1B88B6), Color(0xFF0A1D79))
                 )
+            )
+    ) {
+        Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
+            // Campo de búsqueda
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Buscar venta") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                textStyle = TextStyle(color = Color.White),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color(0xFF90CAF9),
+                    unfocusedLabelColor = Color(0xFF90CAF9)
+                )
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Filtrar ventas según búsqueda
+            val filteredVentas = ventas.filter { (_, venta) ->
+                venta.cliente.contains(searchQuery, ignoreCase = true) ||
+                        venta.empleado.contains(searchQuery, ignoreCase = true)
+            }
+
+            if (filteredVentas.isEmpty()) {
+                Text(
+                    text = "No se encontraron ventas.",
+                    color = Color.White,
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    items(filteredVentas) { (id, venta) ->
+                        VentaItem(
+                            venta = venta,
+                            onEliminarClick = { ventaViewModel.eliminarVenta(id) },
+                            onDetallesClick = { navHostController.navigate("PantallaDetallesVenta/$id") }
+                        )
+                    }
+                }
+            }
+
+            // Botón flotante para agregar una nueva venta
+            FloatingActionButton(
+                onClick = { navHostController.navigate("PantallaAddVentas") },
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Añadir Venta")
             }
         }
     }
 }
-
 @Composable
-fun VentaItem(venta: Venta, onEliminarClick: () -> Unit) {
-    Column(
+fun VentaItem(venta: Venta, onEliminarClick: () -> Unit, onDetallesClick: () -> Unit) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .border(1.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.medium)
-            .padding(16.dp)
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        // Información principal de la venta
-        Text(text = "Cliente: ${venta.cliente}", style = MaterialTheme.typography.bodyMedium)
-        Text(text = "Empleado: ${venta.empleado}", style = MaterialTheme.typography.bodyMedium)
-        Text(text = "Total: ${venta.total} €", style = MaterialTheme.typography.bodyMedium)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Detalles de los productos vendidos
-        Text(text = "Productos:", style = MaterialTheme.typography.bodyMedium)
-        venta.productosVendidos.forEach { producto ->
-            Text(
-                text = "- ${producto.nombre}: ${producto.precioUnitario} € (x${producto.cantidad})",
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Botón para eliminar la venta
-        Button(
-            onClick = onEliminarClick,
-            modifier = Modifier.align(Alignment.End)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
-            Text("Eliminar Venta")
+            Text(
+                text = "Cliente: ${venta.cliente}",
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = "Empleado: ${venta.empleado}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Total: ${venta.total} €",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "Fecha: ${venta.fecha.toFormattedString()}",
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Detalles:",
+                style = MaterialTheme.typography.titleSmall
+            )
+
+            // Mostrar detalles de la venta
+            venta.productosVendidos.forEach { detalle ->
+                Text(
+                    text = "- ${detalle.cantidad}x ${detalle.nombre} a ${detalle.precioUnitario}€ por unidad",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(horizontalArrangement = Arrangement.End) {
+                IconButton(onClick = onEliminarClick) {
+                    Icon(Icons.Default.Delete, contentDescription = "Eliminar Venta")
+                }
+            }
         }
     }
 }
