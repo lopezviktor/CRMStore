@@ -13,7 +13,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.crmstore.ui.screens.MainScreen
 import com.example.crmstore.ui.screens.PantallaLogin
-import com.example.crmstore.ui.screens.PantallaPerfil
 import com.example.crmstore.ui.screens.PantallaRegistro
 import com.example.crmstore.ui.screens.clientes.PantallaFormularioClientes
 import com.example.crmstore.ui.screens.clientes.PantallaModificarCliente
@@ -29,7 +28,7 @@ import com.example.crmstore.ui.viewmodel.VentaViewModel
 @Composable
 fun NavigationApp(navHostController: NavHostController, authManager: AuthManager, modifier: Modifier = Modifier) {
 
-    val startDestination = if (authManager.isUserLoggedIn()) "PantallaFormularioEmpleados" else "PantallaLogin"
+    val startDestination = if (authManager.isUserLoggedIn()) "PantallaDashboardVentas" else "PantallaLogin"
 
     NavHost(
         navController = navHostController,
@@ -90,7 +89,6 @@ fun NavigationApp(navHostController: NavHostController, authManager: AuthManager
         //LOGIN REGISTRO
         composable("PantallaLogin") { PantallaLogin (navHostController) }
         composable("PantallaRegistro") { PantallaRegistro (navHostController) }
-        composable("PantallaPerfil") { PantallaPerfil (navHostController) }
 
         composable("MainScreen") { MainScreen(authManager, navHostController) }
     }

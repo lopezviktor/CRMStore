@@ -11,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -31,7 +30,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.crmstore.componentes.BotonEstandar
 import com.example.crmstore.modelo.Cliente
+import com.example.crmstore.ui.theme.FondoPantallas
+import com.example.crmstore.ui.theme.GrisOscuro2
+import com.example.crmstore.ui.theme.Negro
 import com.example.crmstore.ui.viewmodel.ClienteViewModel
 
 @Composable
@@ -54,7 +57,7 @@ fun PantallaAddCliente(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1B88B6), Color(0xFF0A1D79))
+                    colors = FondoPantallas
                 )
             )
     ) {
@@ -69,7 +72,7 @@ fun PantallaAddCliente(
             Text(
                 "Añadir Nuevo Cliente",
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color.White,
+                color = GrisOscuro2,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -80,12 +83,12 @@ fun PantallaAddCliente(
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    disabledTextColor = Color.White,
-                    focusedLabelColor = Color(0xFF90CAF9),
-                    unfocusedLabelColor = Color(0xFF90CAF9),
-                    cursorColor = Color.White
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro
                 )
             )
 
@@ -96,12 +99,12 @@ fun PantallaAddCliente(
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    disabledTextColor = Color.White,
-                    focusedLabelColor = Color(0xFF90CAF9),
-                    unfocusedLabelColor = Color(0xFF90CAF9),
-                    cursorColor = Color.White
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro
                 )
             )
 
@@ -112,12 +115,12 @@ fun PantallaAddCliente(
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    disabledTextColor = Color.White,
-                    focusedLabelColor = Color(0xFF90CAF9),
-                    unfocusedLabelColor = Color(0xFF90CAF9),
-                    cursorColor = Color.White
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro
                 )
             )
 
@@ -128,12 +131,12 @@ fun PantallaAddCliente(
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    disabledTextColor = Color.White,
-                    focusedLabelColor = Color(0xFF90CAF9),
-                    unfocusedLabelColor = Color(0xFF90CAF9),
-                    cursorColor = Color.White
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro
                 )
             )
 
@@ -145,12 +148,12 @@ fun PantallaAddCliente(
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    disabledTextColor = Color.White,
-                    focusedLabelColor = Color(0xFF90CAF9),
-                    unfocusedLabelColor = Color(0xFF90CAF9),
-                    cursorColor = Color.White
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro
                 )
             )
 
@@ -161,16 +164,17 @@ fun PantallaAddCliente(
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    disabledTextColor = Color.White,
-                    focusedLabelColor = Color(0xFF90CAF9),
-                    unfocusedLabelColor = Color(0xFF90CAF9),
-                    cursorColor = Color.White
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro
                 )
             )
 
-            Button(
+            BotonEstandar(
+                texto = "Guardar Cliente",
                 onClick = {
                     val (esValido, mensaje) = validarCamposCliente(dni, nombre, apellidos, mail, telefono)
                     if (esValido) {
@@ -192,10 +196,7 @@ fun PantallaAddCliente(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
-            ) {
-                Text("Guardar Cliente")
-            }
-
+            )
             Spacer(modifier = Modifier.height(200.dp))
         }
 

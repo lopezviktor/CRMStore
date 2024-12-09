@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.crmstore.componentes.BotonEstandar
+import com.example.crmstore.ui.theme.GrisOscuro2
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -46,7 +47,7 @@ fun PantallaRegistro(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1B88B6), Color(0xFF0A1D79))
+                    colors = listOf(Color(0xFF9799B2), Color(0xFF87A1E5))
                 )
             ),
         contentAlignment = Alignment.Center
@@ -61,7 +62,7 @@ fun PantallaRegistro(
                 text = "Registro de Usuario",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = GrisOscuro2,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
