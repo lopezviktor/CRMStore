@@ -45,6 +45,7 @@ import com.example.crmstore.modelo.Cliente
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.Morado2
 import com.example.crmstore.ui.theme.Negro
+import com.example.crmstore.ui.theme.Rojizo
 import com.example.crmstore.ui.viewmodel.ClienteViewModel
 import kotlinx.coroutines.delay
 
@@ -91,7 +92,7 @@ fun PantallaFormularioClientes(
                     colors = FondoPantallas
                 )
             )
-            .padding(bottom = 62.dp)
+            .padding(bottom = 80.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
             Row(
@@ -168,7 +169,9 @@ fun PantallaFormularioClientes(
                 Text(
                     text = mensajeBorrado,
                     color = Color.Red,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 )
                 // Quita el mensaje después de 4 segundos
                 LaunchedEffect(mensajeBorrado) {
@@ -217,7 +220,11 @@ fun ClienteItem(
                 Icon(Icons.Default.Edit, contentDescription = "Editar Cliente")
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Eliminar Cliente")
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar Cliente",
+                    tint = Rojizo
+                )
             }
         }
     }

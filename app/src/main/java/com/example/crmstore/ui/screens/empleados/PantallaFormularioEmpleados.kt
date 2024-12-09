@@ -1,15 +1,43 @@
 package com.example.crmstore.ui.screens.empleados
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -18,8 +46,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.crmstore.componentes.BotonEstandar
 import com.example.crmstore.modelo.Empleado
 import com.example.crmstore.modelo.Evento
+import com.example.crmstore.ui.theme.FondoPantallas
+import com.example.crmstore.ui.theme.Negro
+import com.example.crmstore.ui.theme.Rojizo
 import com.example.crmstore.ui.viewmodel.EmpleadoViewModel
 import kotlinx.coroutines.delay
 
@@ -63,45 +95,57 @@ fun PantallaFormularioEmpleados(
     Box(
         modifier = Modifier.fillMaxSize().background(
             brush = Brush.verticalGradient(
-                colors = listOf(Color(0xFF1B88B6), Color(0xFF0A1D79))
+                colors = FondoPantallas
             )
         )
+            .padding(bottom = 80.dp)
     ) {
 
         Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
 
-            // Campo de búsqueda.
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                label = { Text("Buscar empleado") },
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal=16.dp, vertical=8.dp),
-                textStyle = TextStyle(color = Color.White),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    disabledTextColor = Color.White,
-                    focusedLabelColor = Color(0xFF90CAF9),
-                    unfocusedLabelColor = Color(0xFF90CAF9)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Buscar empleado") },
+                    modifier = Modifier
+                        .weight(1f) // Hace que ocupe el espacio restante
+                        .padding(end = 8.dp), // Espaciado entre el buscador y el botón
+                    textStyle = TextStyle(color = Negro),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Negro,
+                        unfocusedTextColor = Negro,
+                    )
                 )
-            )
+                FloatingActionButton(
+                    onClick = { navHostController.navigate("PantallaAddEmpleado") },
+                    modifier = Modifier.size(56.dp) // Tamaño estándar del botón flotante
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Agregar Empleado")
+                }
+            }
 
             // Resumen de próximos eventos.
             Text(
                 "Próximos eventos",
                 style=MaterialTheme.typography.titleMedium,
-                modifier=Modifier.padding(16.dp)
+                modifier=Modifier.padding(8.dp)
             )
 
             // Botón "Añadir Evento"
-            Button(
-                onClick={ showAddEventDialog=true }, // Muestra el diálogo para añadir evento
-                modifier=Modifier.fillMaxWidth().padding(horizontal=16.dp, vertical=8.dp)
-            ) {
-                Text("Añadir Evento")
-            }
+            BotonEstandar(
+                texto = "Añadir Evento",
+                onClick = { showAddEventDialog = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
 
             if (eventos.isEmpty()) {
                 Text("No hay próximos eventos.", Modifier.padding(16.dp))
@@ -135,24 +179,20 @@ fun PantallaFormularioEmpleados(
 
             // Muestra mensaje de eliminación si existe.
             if (mensajeBorrado.isNotEmpty()) {
-                Text(text=mensajeBorrado, color=Color.Red, modifier=Modifier.padding(16.dp))
-
-                // Quita el mensaje después de 4 segundos.
+                Text(
+                    text = mensajeBorrado,
+                    color = Color.Red,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+                // Quita el mensaje después de 4 segundos
                 LaunchedEffect(mensajeBorrado) {
                     delay(4000)
-                    mensajeBorrado=""
+                    mensajeBorrado = ""
                 }
             }
-
-            // Botón flotante para agregar nuevo empleado.
-            FloatingActionButton(
-                onClick={ navHostController.navigate("PantallaAddEmpleado") },
-                modifier=Modifier.align(Alignment.End).padding(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription="Agregar Empleado")
-            }
         }
-
     }
 
     // Diálogo para agregar un nuevo evento.
@@ -191,17 +231,23 @@ fun EmpleadoItem(
                 Text(text="${empleado.nombre} ${empleado.apellidos}",
                     style=MaterialTheme.typography.bodyLarge)
 
-                Text(text="Puesto:${empleado.puesto ?: "No especificado"}",
+                Text(text="Puesto: ${empleado.puesto ?: "No especificado"}",
                     style=MaterialTheme.typography.bodyMedium)
 
-                Text(text="Salario Base:${empleado.salarioBase}€",
+                Text(text="Salario Base: ${empleado.salarioBase}€",
                     style=MaterialTheme.typography.bodySmall)
 
             }
 
             IconButton(onClick=onEdit){ Icon(Icons.Default.Edit, contentDescription="Editar Empleado") }
 
-            IconButton(onClick=onDelete){ Icon(Icons.Default.Delete, contentDescription="Eliminar Empleado") }
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar Empleado",
+                    tint = Rojizo
+                )
+            }
 
         }
 
