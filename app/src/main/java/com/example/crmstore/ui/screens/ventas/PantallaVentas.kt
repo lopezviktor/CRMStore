@@ -33,13 +33,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.crmstore.modelo.Venta
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.Morado2
+import com.example.crmstore.ui.theme.Negro
 import com.example.crmstore.ui.viewmodel.VentaViewModel
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
@@ -66,6 +66,8 @@ fun PantallaVentas(
                     colors = FondoPantallas
                 )
             )
+            .padding(bottom = 62.dp)
+
     ) {
         Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
             Row(
@@ -83,10 +85,10 @@ fun PantallaVentas(
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 8.dp),
-                    textStyle = TextStyle(color = Color.White),
+                    textStyle = TextStyle(color = Negro),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
+                        focusedTextColor = Negro,
+                        unfocusedTextColor = Negro,
                     )
                 )
 
@@ -113,7 +115,7 @@ fun PantallaVentas(
             if (filteredVentas.isEmpty()) {
                 Text(
                     text = "No se encontraron ventas.",
-                    color = Color.White,
+                    color = Negro,
                     modifier = Modifier.padding(16.dp)
                 )
             } else {
