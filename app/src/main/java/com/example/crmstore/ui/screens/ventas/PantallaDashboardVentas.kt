@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -20,10 +18,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.crmstore.componentes.BotonEstandar
+import com.example.crmstore.ui.theme.FondoPantallas
+import com.example.crmstore.ui.theme.GrisOscuro2
 import com.example.crmstore.ui.viewmodel.VentaViewModel
 
 @Composable
@@ -45,7 +45,7 @@ fun PantallaDashboardVentas(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1B88B6), Color(0xFF0A1D79))
+                    colors = FondoPantallas
                 )
             )
     ) {
@@ -58,7 +58,7 @@ fun PantallaDashboardVentas(
             Text(
                 text = "DASHBOARD VENTAS",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = GrisOscuro2,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
@@ -68,16 +68,10 @@ fun PantallaDashboardVentas(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Botón para ir a la lista de ventas
-            Button(
-                onClick = { navHostController.navigate("PantallaVentas") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
-                Text(text = "Ir a Lista de Ventas")
-            }
+            BotonEstandar(
+                texto = "Ir a Lista de Ventas",
+                onClick = { navHostController.navigate("PantallaVentas") }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -109,10 +103,42 @@ fun PantallaDashboardVentas(
                     )
                 }
                 item {
-                    DashboardCard(
-                        title = "Cliente & Empleado Destacados",
-                        content = "Cliente: $clienteMasGastador\nEmpleado: $empleadoMasVendedor"
+                    Text(
+                        text = "Cliente & Empleado destacados",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth()
                     )
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Cliente: $clienteMasGastador",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                            Text(
+                                text = "Empleado: $empleadoMasVendedor",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -164,41 +190,6 @@ fun DashboardCardPager(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun DashboardCard(
-    title: String,
-    content: String
-) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Text(
-                text = content,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }

@@ -1,8 +1,6 @@
 package com.example.crmstore.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +39,8 @@ import androidx.navigation.NavHostController
 import com.example.crmstore.MainActivity
 import com.example.crmstore.R
 import com.example.crmstore.componentes.BotonEstandar
+import com.example.crmstore.ui.theme.FondoPantallas
+import com.example.crmstore.ui.theme.GrisOscuro2
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -57,7 +57,7 @@ fun PantallaLogin(navHostController: NavHostController){
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1B88B6), Color(0xFF0A1D79))
+                    colors = FondoPantallas
                 )
             ),
         contentAlignment = Alignment.Center
@@ -72,7 +72,7 @@ fun PantallaLogin(navHostController: NavHostController){
                 text = "Iniciar Sesión",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xff273270),
+                color = GrisOscuro2,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -146,13 +146,9 @@ fun PantallaLogin(navHostController: NavHostController){
                 onClick = { activity?.signInWithGoogle() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
-                    .border(
-                        BorderStroke(2.dp, Color(0xff273270)),
-                        shape = ButtonDefaults.shape
-                    ),
+                    .padding(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4285F4)
+                    containerColor = Color(0xFF15A5D0)
                 )
             ) {
                 Row(

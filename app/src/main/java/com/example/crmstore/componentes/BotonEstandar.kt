@@ -1,5 +1,6 @@
 package com.example.crmstore.componentes
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -11,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.crmstore.ui.theme.Morado2
 
 @Composable
 fun BotonEstandar(
@@ -24,10 +26,16 @@ fun BotonEstandar(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF673AB7),
+            containerColor = Morado2,
             contentColor = Color.White
         ),
-        modifier = modifier
+        modifier = modifier,
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            top = 4.dp,
+            end = 16.dp,
+            bottom = 4.dp
+        )
     ) {
         Text(
             text = texto,

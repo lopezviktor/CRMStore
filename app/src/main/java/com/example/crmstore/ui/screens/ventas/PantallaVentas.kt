@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -37,6 +38,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.crmstore.modelo.Venta
+import com.example.crmstore.ui.theme.FondoPantallas
+import com.example.crmstore.ui.theme.Morado2
 import com.example.crmstore.ui.viewmodel.VentaViewModel
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
@@ -60,28 +63,45 @@ fun PantallaVentas(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1B88B6), Color(0xFF0A1D79))
+                    colors = FondoPantallas
                 )
             )
     ) {
         Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
-            // Campo de búsqueda
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                label = { Text("Buscar venta") },
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                textStyle = TextStyle(color = Color.White),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedLabelColor = Color(0xFF90CAF9),
-                    unfocusedLabelColor = Color(0xFF90CAF9)
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Campo de búsqueda
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Buscar venta") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp),
+                    textStyle = TextStyle(color = Color.White),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                    )
                 )
-            )
 
+                // Botón flotante para agregar una nueva venta
+                FloatingActionButton(
+                    onClick = { navHostController.navigate("PantallaAddVentas") },
+                    modifier = Modifier.size(56.dp) // Tamaño estándar de un FAB
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Añadir Venta",
+                        tint = Morado2
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
 
             // Filtrar ventas según búsqueda
@@ -110,16 +130,6 @@ fun PantallaVentas(
                         )
                     }
                 }
-            }
-
-            // Botón flotante para agregar una nueva venta
-            FloatingActionButton(
-                onClick = { navHostController.navigate("PantallaAddVentas") },
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Añadir Venta")
             }
         }
     }
