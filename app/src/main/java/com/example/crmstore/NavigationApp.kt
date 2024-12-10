@@ -80,7 +80,7 @@ fun NavigationApp(navHostController: NavHostController, authManager: AuthManager
         //VENTAS
         composable("PantallaDashboardVentas") { PantallaDashboardVentas ( viewModel = VentaViewModel(), navHostController = navHostController) }
         composable("PantallaVentas") { PantallaVentas(ventaViewModel = viewModel(), navHostController = navHostController) }
-        composable("PantallaAddVentas") { PantallaAddVentas(ventaViewModel = viewModel(), navHostController = navHostController) }
+        composable("PantallaAddVentas") { PantallaAddVentas(ventaViewModel = viewModel(), productoViewModel = viewModel(), navHostController = navHostController) }
 
         //PRODUCTOS
         composable("PantallaAddProducto") { PantallaAddProducto(navHostController = navHostController, productoViewModel = viewModel()) }

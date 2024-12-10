@@ -9,7 +9,6 @@ import com.example.crmstore.controlador.VentaRepository
 import com.example.crmstore.modelo.DetalleVenta
 import com.example.crmstore.modelo.Producto
 import com.example.crmstore.modelo.Venta
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 class VentaViewModel : ViewModel() {
@@ -29,9 +28,6 @@ class VentaViewModel : ViewModel() {
     val clienteSeleccionado = mutableStateOf<String?>(null)
     val empleadoSeleccionado = mutableStateOf<String?>(null)
 
-    // Mapa para asociar productos con sus IDs de Firebase
-    private val productosMap = mutableMapOf<String, Producto>()
-
     init {
         cargarClientes()
         cargarEmpleados()
@@ -42,52 +38,38 @@ class VentaViewModel : ViewModel() {
     // ---------------- Métodos de inicialización ----------------
 
     private fun cargarClientes() {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("clientes")
-            .get()
-            .addOnSuccessListener { snapshot ->
+        viewModelScope.launch {
+            ventaRepository.obtenerClientes { listaClientes ->
                 clientes.clear()
-                snapshot.documents.forEach { document ->
-                    val nombre = document.getString("nombre") ?: "Nombre desconocido"
-                    val apellidos = document.getString("apellidos") ?: "Apellidos desconocidos"
-                    clientes.add("$nombre $apellidos")
-                }
+                clientes.addAll(listaClientes)
             }
-            .addOnFailureListener { e ->
-                println("Error al cargar clientes: ${e.message}")
-            }
+        }
     }
 
     private fun cargarEmpleados() {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("empleados")
-            .get()
-            .addOnSuccessListener { snapshot ->
+        viewModelScope.launch {
+            ventaRepository.obtenerEmpleados { listaEmpleados ->
                 empleados.clear()
-                snapshot.documents.forEach { document ->
-                    val nombre = document.getString("nombre") ?: "Nombre desconocido"
-                    val apellidos = document.getString("apellidos") ?: "Apellidos desconocidos"
-                    empleados.add("$nombre $apellidos")
-                }
+                empleados.addAll(listaEmpleados)
             }
-            .addOnFailureListener { e ->
-                println("Error al cargar empleados: ${e.message}")
-            }
+        }
     }
 
     private fun cargarVentasEnTiempoReal() {
-        ventaRepository.obtenerVentasEnTiempoReal { ventasObtenidas ->
-            ventas.clear()
-            ventas.addAll(ventasObtenidas)
+        viewModelScope.launch {
+            ventaRepository.obtenerVentasEnTiempoReal { listaVentas ->
+                ventas.clear()
+                ventas.addAll(listaVentas)
+            }
         }
     }
 
     private fun cargarProductos() {
-        ventaRepository.cargarProductos { productosObtenidos, map ->
-            productos.clear()
-            productos.addAll(productosObtenidos)
-            productosMap.clear()
-            productosMap.putAll(map)
+        viewModelScope.launch {
+            ventaRepository.cargarProductos { listaProductos, _ ->
+                productos.clear()
+                productos.addAll(listaProductos)
+            }
         }
     }
 
@@ -95,7 +77,6 @@ class VentaViewModel : ViewModel() {
 
     fun agregarProductoAlCarrito(producto: Producto, cantidad: Int) {
         val productoEnCarrito = carrito.find { it.productoId == producto.nombre }
-
         if (productoEnCarrito != null) {
             productoEnCarrito.cantidad += cantidad
         } else {
@@ -127,17 +108,47 @@ class VentaViewModel : ViewModel() {
     // ---------------- Métodos de Ventas ----------------
 
     fun agregarVenta() {
+        if (clienteSeleccionado.value == null || empleadoSeleccionado.value == null || carrito.isEmpty()) {
+            mensaje.value = "Faltan datos para completar la venta."
+            return
+        }
+
         val nuevaVenta = Venta(
-            cliente = clienteSeleccionado.value ?: "",
-            empleado = empleadoSeleccionado.value ?: "",
-            productosVendidos = carrito.toList(),
+            cliente = clienteSeleccionado.value!!,
+            empleado = empleadoSeleccionado.value!!,
+            productosVendidos = carrito.map { it },
             total = calcularTotalCarrito()
         )
 
         viewModelScope.launch {
-            val resultado = ventaRepository.agregarVenta(nuevaVenta)
-            mensaje.value = if (resultado) "Venta añadida correctamente" else "Error al añadir la venta"
-            if (resultado) limpiarFormulario()
+            // Cambiar a usar el nombre del producto para actualizar el stock
+            val detallesVenta = carrito.map { detalle ->
+                detalle.nombre to detalle.cantidad // Usar nombre en lugar de productoId
+            }
+
+            val ventaExitosa = ventaRepository.agregarVenta(nuevaVenta)
+            if (ventaExitosa) {
+                val stockActualizado = ventaRepository.actualizarStockPorNombre(detallesVenta)
+                if (stockActualizado) {
+                    limpiarFormulario()
+                    mensaje.value = "Venta agregada correctamente"
+                } else {
+                    mensaje.value = "Error: No se pudo actualizar el stock"
+                }
+            } else {
+                mensaje.value = "Error al agregar la venta"
+            }
+        }
+    }
+
+    private fun actualizarStockProductos() {
+        carrito.forEach { detalle ->
+            viewModelScope.launch {
+                val stockReducido = ventaRepository.reducirStockProducto(detalle.productoId, detalle.cantidad)
+                if (!stockReducido) {
+                    mensaje.value = "Error al reducir stock para el producto: ${detalle.nombre}"
+                }
+            }
         }
     }
 
@@ -151,24 +162,6 @@ class VentaViewModel : ViewModel() {
                 mensaje.value = "Error al eliminar la venta en Firebase"
             }
         }
-    }
-
-    fun cargarVentas() {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("ventas")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                ventas.clear()
-                snapshot.documents.forEach { document ->
-                    val venta = document.toObject(Venta::class.java)
-                    if (venta != null) {
-                        ventas.add(document.id to venta)
-                    }
-                }
-            }
-            .addOnFailureListener { e ->
-                println("Error al cargar ventas: ${e.message}")
-            }
     }
 
     // ---------------- Métodos para el Dashboard ----------------

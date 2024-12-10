@@ -32,12 +32,14 @@ import com.example.crmstore.componentes.BotonEstandar
 import com.example.crmstore.componentes.SeleccionDropdown
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.GrisOscuro2
+import com.example.crmstore.ui.viewmodel.ProductoViewModel
 import com.example.crmstore.ui.viewmodel.VentaViewModel
 
 @Composable
 fun PantallaAddVentas(
     ventaViewModel: VentaViewModel,
     navHostController: NavHostController,
+    productoViewModel: ProductoViewModel
 ) {
     val clientes = ventaViewModel.clientes
     val empleados = ventaViewModel.empleados
@@ -114,26 +116,42 @@ fun PantallaAddVentas(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(text = producto.nombre, style = MaterialTheme.typography.bodyLarge)
                                 Text(text = "${producto.precio} €", style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    text = "Stock: ${producto.stock}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (producto.stock > 0) Color.Gray else Color.Red
+                                )
                             }
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.End
                             ) {
-                                Button(onClick = { if (cantidad > 1) cantidad-- }) {
+                                Button(
+                                    onClick = { if (cantidad > 1) cantidad-- },
+                                    enabled = producto.stock > 0
+                                ) {
                                     Text("-")
                                 }
                                 Text(text = "$cantidad", modifier = Modifier.padding(horizontal = 8.dp))
-                                Button(onClick = { cantidad++ }) {
+                                Button(
+                                    onClick = { cantidad++ },
+                                    enabled = cantidad < producto.stock
+                                ){
                                     Text("+")
                                 }
                             }
 
                             Button(
                                 onClick = {
-                                    ventaViewModel.agregarProductoAlCarrito(producto, cantidad)
+                                    if (cantidad <= producto.stock) {
+                                        ventaViewModel.agregarProductoAlCarrito(producto, cantidad)
+                                    } else {
+                                        alertMessage = "Stock insuficiente para el producto ${producto.nombre}"
+                                        showAlert = true
+                                    }
                                 },
-                                modifier = Modifier.padding(start = 8.dp)
+                                enabled = producto.stock > 0
                             ) {
                                 Text("Añadir")
                             }
@@ -230,6 +248,7 @@ fun PantallaAddVentas(
                             }
                             else -> {
                                 ventaViewModel.agregarVenta()
+                                productoViewModel.cargarProductos()
                                 navHostController.navigate("PantallaVentas") {
                                     popUpTo("PantallaVentas") { inclusive = true }
                                 }
