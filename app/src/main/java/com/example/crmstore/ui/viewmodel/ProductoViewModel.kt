@@ -39,12 +39,16 @@ class ProductoViewModel : ViewModel() {
     fun agregarProducto(producto: Producto) {
         productoRepository.agregarProducto(producto)
     }
-
-    fun actualizarProducto(producto: Producto) {
-        productoRepository.actualizarProducto(producto)
+    fun actualizarStock(productId: String, nuevoStock: Int) {
+        val producto = productos.value.find { it.id == productId }
+        producto?.let {
+            val productoActualizado = it.copy(stock = nuevoStock)
+            productoRepository.actualizarProducto(productoActualizado)
+        }
     }
 
     fun eliminarProducto(id: String) {
         productoRepository.eliminarProducto(id)
     }
+
 }
