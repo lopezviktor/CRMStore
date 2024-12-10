@@ -1,17 +1,21 @@
 package com.example.crmstore.ui.screens.productos
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -20,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -33,10 +38,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.crmstore.modelo.Producto
+import com.example.crmstore.ui.theme.FondoPantallas
+import com.example.crmstore.ui.theme.Morado2
+import com.example.crmstore.ui.theme.Negro
+import com.example.crmstore.ui.theme.Rojizo
 import com.example.crmstore.ui.viewmodel.ProductoViewModel
 import kotlinx.coroutines.delay
 
@@ -48,8 +59,10 @@ fun PantallaFormularioProductos(
     val productos by productoViewModel.productos.collectAsState()
     var mensajeBorrado by remember { mutableStateOf("") }
     var productoAEliminar by remember { mutableStateOf<Pair<String, Producto>?>(null) }
+    var productoSeleccionado by remember { mutableStateOf<Producto?>(null) }
     var searchQuery by remember { mutableStateOf("") }
 
+    // Diálogo de confirmación para eliminar producto
     productoAEliminar?.let { (idDocumento, producto) ->
         AlertDialog(
             onDismissRequest = { productoAEliminar = null },
@@ -79,24 +92,45 @@ fun PantallaFormularioProductos(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1B88B6), Color(0xFF0A1D79))
+                    colors = FondoPantallas
                 )
             )
+            .padding(bottom = 80.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp),
-        ) {
-            // Campo de búsqueda
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                label = { Text("Buscar producto") },
+        Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Campo de búsqueda
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Buscar producto") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp),
+                    textStyle = TextStyle(color = Negro),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Negro,
+                        unfocusedTextColor = Negro,
+                    )
+                )
+                // Botón flotante para agregar productos
+                FloatingActionButton(
+                    onClick = { navHostController.navigate("PantallaAddProducto") },
+                    modifier = Modifier.size(56.dp) // Tamaño estándar de un FAB
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Agregar Producto",
+                        tint = Morado2
+                    )
+                }
+            }
 
             // Filtra los productos según el texto de búsqueda
             val filteredProductos = productos.filter {
@@ -122,8 +156,9 @@ fun PantallaFormularioProductos(
                     items(filteredProductos) { producto ->
                         ProductoItem(
                             producto = producto,
+                            onAdjustStock = { productoSeleccionado = it },
                             onDelete = {
-                                productoAEliminar = null // Ajusta el comportamiento de eliminación
+                                productoAEliminar = producto.id to producto
                             }
                         )
                     }
@@ -135,7 +170,9 @@ fun PantallaFormularioProductos(
                 Text(
                     text = mensajeBorrado,
                     color = Color.Red,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 )
                 // Quita el mensaje después de 4 segundos
                 LaunchedEffect(mensajeBorrado) {
@@ -143,30 +180,38 @@ fun PantallaFormularioProductos(
                     mensajeBorrado = ""
                 }
             }
-
-            // Botón para agregar nuevo producto
-            FloatingActionButton(
-                onClick = { navHostController.navigate("PantallaAddProducto") },
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar Producto")
-            }
         }
+    }
+    // Añadir el diálogo de ajuste de stock
+    productoSeleccionado?.let { producto ->
+        AjustarStockDialog(
+            producto = producto,
+            onDismiss = { productoSeleccionado = null },
+            onConfirm = { nuevoStock ->
+                productoViewModel.actualizarStock(producto.id, nuevoStock)
+                productoSeleccionado = null
+            }
+        )
     }
 }
 
 @Composable
 fun ProductoItem(
     producto: Producto,
+    onAdjustStock: (Producto) -> Unit,
     onDelete: () -> Unit
 ) {
+    val backgroundColor = if (producto.stock == 0) {
+        Color(0x81E53F4E).copy(alpha = 0.5f)
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -189,9 +234,58 @@ fun ProductoItem(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
+            // Botón para ajustar stock
+            IconButton(onClick = { onAdjustStock(producto) }) {
+                Icon(Icons.Default.Edit, contentDescription = "Ajustar Stock")
+            }
+
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Eliminar Producto")
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar Producto",
+                    tint = Rojizo
+                )
             }
         }
     }
+}
+@Composable
+fun AjustarStockDialog(
+    producto: Producto,
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit
+) {
+    var nuevoStock by remember { mutableStateOf(producto.stock.toString()) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Ajustar Stock") },
+        text = {
+            Column {
+                Text("Producto: ${producto.nombre}")
+                OutlinedTextField(
+                    value = nuevoStock,
+                    onValueChange = { nuevoStock = it },
+                    label = { Text("Nuevo Stock") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val stockInt = nuevoStock.toIntOrNull()
+                if (stockInt != null && stockInt >= 0) {
+                    onConfirm(stockInt)
+                }
+            }) {
+                Text("Confirmar")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
 }

@@ -40,6 +40,7 @@ import com.example.crmstore.modelo.Venta
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.Morado2
 import com.example.crmstore.ui.theme.Negro
+import com.example.crmstore.ui.theme.Rojizo
 import com.example.crmstore.ui.viewmodel.VentaViewModel
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
@@ -108,8 +109,15 @@ fun PantallaVentas(
 
             // Filtrar ventas según búsqueda
             val filteredVentas = ventas.filter { (_, venta) ->
-                venta.cliente.contains(searchQuery, ignoreCase = true) ||
-                        venta.empleado.contains(searchQuery, ignoreCase = true)
+                val cliente = ventaViewModel.clientes.find { it.id == venta.cliente }
+                val empleado = ventaViewModel.empleados.find { it.id == venta.empleado }
+                val clienteNombre =
+                    cliente?.let { "${it.nombre} ${it.apellidos}" } ?: "Cliente desconocido"
+                val empleadoNombre =
+                    empleado?.let { "${it.nombre} ${it.apellidos}" } ?: "Empleado desconocido"
+
+                clienteNombre.contains(searchQuery, ignoreCase = true) ||
+                        empleadoNombre.contains(searchQuery, ignoreCase = true)
             }
 
             if (filteredVentas.isEmpty()) {
@@ -125,10 +133,18 @@ fun PantallaVentas(
                         .padding(horizontal = 16.dp)
                 ) {
                     items(filteredVentas) { (id, venta) ->
+                        val cliente = ventaViewModel.clientes.find { it.id == venta.cliente }
+                        val empleado = ventaViewModel.empleados.find { it.id == venta.empleado }
+                        val clienteNombre =
+                            cliente?.let { "${it.nombre} ${it.apellidos}" } ?: "Cliente desconocido"
+                        val empleadoNombre = empleado?.let { "${it.nombre} ${it.apellidos}" }
+                            ?: "Empleado desconocido"
+
                         VentaItem(
                             venta = venta,
+                            clienteNombre = clienteNombre,
+                            empleadoNombre = empleadoNombre,
                             onEliminarClick = { ventaViewModel.eliminarVenta(id) },
-                            onDetallesClick = { navHostController.navigate("PantallaDetallesVenta/$id") }
                         )
                     }
                 }
@@ -137,7 +153,12 @@ fun PantallaVentas(
     }
 }
 @Composable
-fun VentaItem(venta: Venta, onEliminarClick: () -> Unit, onDetallesClick: () -> Unit) {
+fun VentaItem(
+    venta: Venta,
+    clienteNombre: String,
+    empleadoNombre: String,
+    onEliminarClick: () -> Unit,
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -145,49 +166,59 @@ fun VentaItem(venta: Venta, onEliminarClick: () -> Unit, onDetallesClick: () -> 
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Cliente: ${venta.cliente}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                text = "Empleado: ${venta.empleado}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = "Total: ${venta.total} €",
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = "Fecha: ${venta.fecha.toFormattedString()}",
-                style = MaterialTheme.typography.bodySmall
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Detalles:",
-                style = MaterialTheme.typography.titleSmall
-            )
-
-            // Mostrar detalles de la venta
-            venta.productosVendidos.forEach { detalle ->
+            // Columna para texto a la izquierda
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
-                    text = "- ${detalle.cantidad}x ${detalle.nombre} a ${detalle.precioUnitario}€ por unidad",
+                    text = "Cliente: $clienteNombre",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = "Empleado: $empleadoNombre",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Total: ${venta.total} €",
                     style = MaterialTheme.typography.bodySmall
                 )
+                Text(
+                    text = "Fecha: ${venta.fecha.toFormattedString()}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Detalles de la venta
+                Text(
+                    text = "Detalles:",
+                    style = MaterialTheme.typography.titleSmall
+                )
+
+                venta.productosVendidos.forEach { detalle ->
+                    Text(
+                        text = "- ${detalle.cantidad}x ${detalle.nombre} a ${detalle.precioUnitario}€ por unidad",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(horizontalArrangement = Arrangement.End) {
-                IconButton(onClick = onEliminarClick) {
-                    Icon(Icons.Default.Delete, contentDescription = "Eliminar Venta")
-                }
+            IconButton(
+                onClick = onEliminarClick,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar Venta",
+                    tint = Rojizo
+                )
             }
         }
     }

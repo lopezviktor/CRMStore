@@ -2,6 +2,7 @@ package com.example.crmstore.controlador
 
 import android.util.Log
 import com.example.crmstore.modelo.Cliente
+import com.example.crmstore.modelo.Empleado
 import com.example.crmstore.modelo.Producto
 import com.example.crmstore.modelo.Venta
 import com.google.firebase.firestore.FirebaseFirestore
@@ -118,11 +119,13 @@ class VentaRepository {
             null
         }
     }
-    fun obtenerClientes(callback: (List<String>) -> Unit) {
+    fun obtenerClientes(callback: (List<Cliente>) -> Unit) {
         db.collection("clientes").get()
-            .addOnSuccessListener { result ->
-                val clientes = result.documents.mapNotNull { it.getString("nombre") }
-                callback(clientes)
+            .addOnSuccessListener { snapshot ->
+                val listaClientes = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Cliente::class.java)?.apply { id = doc.id }
+                }
+                callback(listaClientes)
             }
             .addOnFailureListener { exception ->
                 exception.printStackTrace()
@@ -130,11 +133,13 @@ class VentaRepository {
             }
     }
 
-    fun obtenerEmpleados(callback: (List<String>) -> Unit) {
+    fun obtenerEmpleados(callback: (List<Empleado>) -> Unit) {
         db.collection("empleados").get()
-            .addOnSuccessListener { result ->
-                val empleados = result.documents.mapNotNull { it.getString("nombre") }
-                callback(empleados)
+            .addOnSuccessListener { snapshot ->
+                val listaEmpleados = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Empleado::class.java)?.apply { id = doc.id }
+                }
+                callback(listaEmpleados)
             }
             .addOnFailureListener { exception ->
                 exception.printStackTrace()

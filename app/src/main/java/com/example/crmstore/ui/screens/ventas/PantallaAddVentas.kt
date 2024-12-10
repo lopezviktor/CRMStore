@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +33,7 @@ import com.example.crmstore.componentes.BotonEstandar
 import com.example.crmstore.componentes.SeleccionDropdown
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.GrisOscuro2
+import com.example.crmstore.ui.theme.Morado2
 import com.example.crmstore.ui.viewmodel.ProductoViewModel
 import com.example.crmstore.ui.viewmodel.VentaViewModel
 
@@ -76,18 +78,38 @@ fun PantallaAddVentas(
                     .padding(top = 6.dp)
             )
 
+            // Selección de Cliente
             SeleccionDropdown(
                 label = "Selecciona Cliente",
-                opciones = clientes,
-                seleccionado = clienteSeleccionado,
-                onSeleccionar = { ventaViewModel.clienteSeleccionado.value = it },
+                opciones = clientes.map { "${it.nombre} ${it.apellidos}".trim() }, // Lista de opciones
+                seleccionado = clienteSeleccionado?.let { "${it.nombre} ${it.apellidos}".trim() }, // Elemento seleccionado
+                onSeleccionar = { seleccion ->
+                    // Encuentra el cliente seleccionado
+                    val cliente = clientes.find { "${it.nombre} ${it.apellidos}".trim() == seleccion }
+                    if (cliente != null) {
+                        ventaViewModel.clienteSeleccionado.value = cliente // Actualiza el cliente seleccionado
+                    } else {
+                        alertMessage = "Cliente no encontrado."
+                        showAlert = true
+                    }
+                }
             )
 
+            // Selección de Empleado
             SeleccionDropdown(
                 label = "Selecciona Empleado",
-                opciones = empleados,
-                seleccionado = empleadoSeleccionado,
-                onSeleccionar = { ventaViewModel.empleadoSeleccionado.value = it },
+                opciones = empleados.map { "${it.nombre} ${it.apellidos}".trim() }, // Lista de opciones
+                seleccionado = empleadoSeleccionado?.let { "${it.nombre} ${it.apellidos}".trim() }, // Elemento seleccionado
+                onSeleccionar = { seleccion ->
+                    // Encuentra el empleado seleccionado
+                    val empleado = empleados.find { "${it.nombre} ${it.apellidos}".trim() == seleccion }
+                    if (empleado != null) {
+                        ventaViewModel.empleadoSeleccionado.value = empleado // Actualiza el empleado seleccionado
+                    } else {
+                        alertMessage = "Empleado no encontrado."
+                        showAlert = true
+                    }
+                }
             )
 
             // Lista de productos disponibles
@@ -129,14 +151,22 @@ fun PantallaAddVentas(
                             ) {
                                 Button(
                                     onClick = { if (cantidad > 1) cantidad-- },
-                                    enabled = producto.stock > 0
+                                    enabled = producto.stock > 0,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Morado2,
+                                        contentColor = Color.White
+                                    )
                                 ) {
                                     Text("-")
                                 }
                                 Text(text = "$cantidad", modifier = Modifier.padding(horizontal = 8.dp))
                                 Button(
                                     onClick = { cantidad++ },
-                                    enabled = cantidad < producto.stock
+                                    enabled = cantidad < producto.stock,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Morado2,
+                                        contentColor = Color.White
+                                    )
                                 ){
                                     Text("+")
                                 }
@@ -151,7 +181,12 @@ fun PantallaAddVentas(
                                         showAlert = true
                                     }
                                 },
-                                enabled = producto.stock > 0
+                                enabled = producto.stock > 0,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Morado2,
+                                    contentColor = Color.White
+                                ),
+                                modifier = Modifier.padding(start = 10.dp)
                             ) {
                                 Text("Añadir")
                             }
@@ -204,9 +239,15 @@ fun PantallaAddVentas(
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier.padding(end = 8.dp)
                                 )
-                                Button(onClick = {
-                                    ventaViewModel.eliminarProductoDelCarrito(detalle.productoId)
-                                }) {
+                                Button(
+                                    onClick = {
+                                        ventaViewModel.eliminarProductoDelCarrito(detalle.productoId)
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Morado2,
+                                        contentColor = Color.White
+                                    ),
+                                ) {
                                     Text("Eliminar")
                                 }
                             }
@@ -219,7 +260,6 @@ fun PantallaAddVentas(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val total = ventaViewModel.calcularTotalCarrito()
@@ -227,7 +267,9 @@ fun PantallaAddVentas(
                     text = "Total: $total €",
                     style = MaterialTheme.typography.titleMedium,
                     color = GrisOscuro2,
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp)
                 )
                 BotonEstandar(
                     texto = "Confirmar Venta",
@@ -255,11 +297,12 @@ fun PantallaAddVentas(
                             }
                         }
                     },
+                    modifier = Modifier
+                        .padding(end = 8.dp)
                 )
             }
         }
     }
-
     // Diálogo de alerta
     if (showAlert) {
         AlertDialog(
