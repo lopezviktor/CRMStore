@@ -6,9 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.crmstore.controlador.VentaRepository
+import com.example.crmstore.modelo.Cliente
 import com.example.crmstore.modelo.DetalleVenta
+import com.example.crmstore.modelo.Empleado
 import com.example.crmstore.modelo.Producto
 import com.example.crmstore.modelo.Venta
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 
 class VentaViewModel : ViewModel() {
@@ -17,16 +21,16 @@ class VentaViewModel : ViewModel() {
     private val ventaRepository = VentaRepository()
 
     // Listas observables para la UI
-    val clientes = mutableStateListOf<String>()
-    val empleados = mutableStateListOf<String>()
+    val clientes = mutableStateListOf<Cliente>()
+    val empleados = mutableStateListOf<Empleado>()
     val ventas = mutableStateListOf<Pair<String, Venta>>()
     val productos = mutableStateListOf<Producto>()
 
     // Estados observables
     val mensaje = mutableStateOf("")
     val carrito = mutableStateListOf<DetalleVenta>()
-    val clienteSeleccionado = mutableStateOf<String?>(null)
-    val empleadoSeleccionado = mutableStateOf<String?>(null)
+    val clienteSeleccionado = mutableStateOf<Cliente?>(null)
+    val empleadoSeleccionado = mutableStateOf<Empleado?>(null)
 
     init {
         cargarClientes()
@@ -36,23 +40,37 @@ class VentaViewModel : ViewModel() {
     }
 
     // ---------------- Métodos de inicialización ----------------
-
-    private fun cargarClientes() {
-        viewModelScope.launch {
-            ventaRepository.obtenerClientes { listaClientes ->
+    fun cargarClientes() {
+        Firebase.firestore.collection("clientes")
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Log.e("VentaViewModel", "Error al cargar clientes", exception)
+                    return@addSnapshotListener
+                }
+                val clientesList = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(Cliente::class.java)?.also {
+                        it.id = doc.id
+                    }
+                }.orEmpty()
                 clientes.clear()
-                clientes.addAll(listaClientes)
+                clientes.addAll(clientesList)
             }
-        }
     }
 
-    private fun cargarEmpleados() {
-        viewModelScope.launch {
-            ventaRepository.obtenerEmpleados { listaEmpleados ->
+    fun cargarEmpleados() {
+        Firebase.firestore.collection("empleados")
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Log.e("VentaViewModel", "Error al cargar empleados", exception)
+                    return@addSnapshotListener
+                }
+                val empleadosList = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(Empleado::class.java)?.also {
+                        it.id = doc.id
+                    }
+                }.orEmpty()
                 empleados.clear()
-                empleados.addAll(listaEmpleados)
-            }
-        }
+                empleados.addAll(empleadosList)            }
     }
 
     private fun cargarVentasEnTiempoReal() {
@@ -114,8 +132,8 @@ class VentaViewModel : ViewModel() {
         }
 
         val nuevaVenta = Venta(
-            cliente = clienteSeleccionado.value!!,
-            empleado = empleadoSeleccionado.value!!,
+            cliente = clienteSeleccionado.value!!.id, // Extrae el ID del cliente seleccionado
+            empleado = empleadoSeleccionado.value!!.id,
             productosVendidos = carrito.map { it },
             total = calcularTotalCarrito()
         )
@@ -211,11 +229,12 @@ class VentaViewModel : ViewModel() {
     fun obtenerTopProductosMasVendidos(top: Int): List<Pair<String, Int>> {
         try {
             return ventas.flatMap { venta ->
-                Log.d("Debug", "Procesando venta: $venta")
-                venta.second.productosVendidos // Asegúrate de que esta lista no sea nula
+                venta.second.productosVendidos
             }
-                .groupingBy { it.nombre }
-                .eachCount()
+                .groupBy { it.nombre }
+                .mapValues { entry ->
+                    entry.value.sumOf { it.cantidad }
+                }
                 .entries
                 .sortedByDescending { it.value }
                 .take(top)
@@ -225,14 +244,17 @@ class VentaViewModel : ViewModel() {
             return emptyList()
         }
     }
+
     //MES ACTUAL
     fun obtenerTopProductosMasVendidosDelMes(top: Int): List<Pair<String, Int>> {
         val ventasMes = obtenerVentasDelMesActual()
         return ventasMes.flatMap { venta ->
             venta.second.productosVendidos
         }
-            .groupingBy { it.nombre }
-            .eachCount()
+            .groupBy { it.nombre }
+            .mapValues { entry ->
+                entry.value.sumOf { it.cantidad }
+            }
             .entries
             .sortedByDescending { it.value }
             .take(top)
@@ -243,28 +265,32 @@ class VentaViewModel : ViewModel() {
         val gastosPorCliente = mutableMapOf<String, Double>()
 
         ventas.forEach { (_, venta) ->
-            val cliente = venta.cliente
+            val clienteId = venta.cliente
             val totalVenta = venta.total
-            if (cliente.isNotBlank()) {
-                gastosPorCliente[cliente] = gastosPorCliente.getOrDefault(cliente, 0.0) + totalVenta
-            }
+            gastosPorCliente[clienteId] = gastosPorCliente.getOrDefault(clienteId, 0.0) + totalVenta
         }
 
-        return gastosPorCliente.maxByOrNull { it.value }?.key ?: "Ninguno"
+        val clienteIdMasGastador = gastosPorCliente.maxByOrNull { it.value }?.key
+        return clienteIdMasGastador?.let { id ->
+            val cliente = clientes.find { it.id == id }
+            "${cliente?.nombre} ${cliente?.apellidos}".trim()
+        } ?: "Desconocido"
     }
 
     fun obtenerEmpleadoQueMasHaVendido(): String {
         val ventasPorEmpleado = mutableMapOf<String, Double>()
 
         ventas.forEach { (_, venta) ->
-            val empleado = venta.empleado
+            val empleadoId = venta.empleado
             val totalVenta = venta.total
-            if (empleado.isNotBlank()) {
-                ventasPorEmpleado[empleado] = ventasPorEmpleado.getOrDefault(empleado, 0.0) + totalVenta
-            }
+            ventasPorEmpleado[empleadoId] = ventasPorEmpleado.getOrDefault(empleadoId, 0.0) + totalVenta
         }
 
-        return ventasPorEmpleado.maxByOrNull { it.value }?.key ?: "Ninguno"
+        val empleadoIdMasVendedor = ventasPorEmpleado.maxByOrNull { it.value }?.key
+        return empleadoIdMasVendedor?.let { id ->
+            val empleado = empleados.find { it.id == id }
+            "${empleado?.nombre} ${empleado?.apellidos}".trim()
+        } ?: "Desconocido"
     }
 
 }

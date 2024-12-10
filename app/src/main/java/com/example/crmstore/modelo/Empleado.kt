@@ -1,7 +1,7 @@
 package com.example.crmstore.modelo
 
 data class Empleado(
-    val id: String = "",
+    var id: String = "",
     val nombre: String = "",
     val apellidos: String = "",
     val mail: String = "",

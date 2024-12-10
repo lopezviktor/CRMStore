@@ -1,12 +1,12 @@
 package com.example.crmstore.modelo
 
 data class Cliente(
-    val id: String = "",
+    var id: String = "",
     val dni: String = "",
-    val nombre: String = "",
-    val apellidos: String = "",
+    var nombre: String = "",
+    var apellidos: String = "",
     val mail: String = "",
     val telefono: String? = null,
     val direccion: String? = null,
 
-)
+    )
