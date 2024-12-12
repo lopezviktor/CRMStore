@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.crmstore.componentes.BotonEstandar
+import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.GrisOscuro2
 import com.google.firebase.auth.FirebaseAuth
 
@@ -47,7 +48,7 @@ fun PantallaRegistro(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF9799B2), Color(0xFF87A1E5))
+                    colors = FondoPantallas
                 )
             ),
         contentAlignment = Alignment.Center

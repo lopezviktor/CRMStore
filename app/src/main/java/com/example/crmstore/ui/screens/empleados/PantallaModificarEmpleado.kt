@@ -113,7 +113,7 @@ fun PantallaModificarEmpleado(
                 modifier = Modifier
                     .fillMaxWidth(),
                     //.padding(vertical = 8.dp),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
@@ -131,7 +131,7 @@ fun PantallaModificarEmpleado(
                 modifier = Modifier
                     .fillMaxWidth(),
                     //.padding(vertical = 8.dp),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
@@ -149,7 +149,7 @@ fun PantallaModificarEmpleado(
                 modifier = Modifier
                     .fillMaxWidth(),
                     //.padding(vertical = 8.dp),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
@@ -167,7 +167,7 @@ fun PantallaModificarEmpleado(
                 modifier = Modifier
                     .fillMaxWidth(),
                     //.padding(vertical = 8.dp),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
@@ -185,7 +185,7 @@ fun PantallaModificarEmpleado(
                 modifier = Modifier
                     .fillMaxWidth(),
                     //.padding(vertical = 8.dp),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
@@ -206,7 +206,7 @@ fun PantallaModificarEmpleado(
                 modifier = Modifier
                     .fillMaxWidth(),
                     //.padding(vertical = 8.dp),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
@@ -224,7 +224,7 @@ fun PantallaModificarEmpleado(
                 modifier = Modifier
                     .fillMaxWidth(),
                     //.padding(vertical = 8.dp),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,

@@ -49,6 +49,7 @@ import androidx.navigation.NavHostController
 import com.example.crmstore.componentes.BotonEstandar
 import com.example.crmstore.modelo.Empleado
 import com.example.crmstore.modelo.Evento
+import com.example.crmstore.ui.theme.AzulClaro
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.Negro
 import com.example.crmstore.ui.theme.Rojizo
@@ -125,18 +126,12 @@ fun PantallaFormularioEmpleados(
                 )
                 FloatingActionButton(
                     onClick = { navHostController.navigate("PantallaAddEmpleado") },
+                    containerColor = AzulClaro,
                     modifier = Modifier.size(56.dp) // Tamaño estándar del botón flotante
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Agregar Empleado")
                 }
             }
-
-            // Resumen de próximos eventos.
-            Text(
-                "Próximos eventos",
-                style=MaterialTheme.typography.titleMedium,
-                modifier=Modifier.padding(8.dp)
-            )
 
             // Botón "Añadir Evento"
             BotonEstandar(
@@ -144,6 +139,14 @@ fun PantallaFormularioEmpleados(
                 onClick = { showAddEventDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
+            // Resumen de próximos eventos.
+            Text(
+                "Próximos eventos",
+                style=MaterialTheme.typography.titleMedium,
+                modifier=Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
 

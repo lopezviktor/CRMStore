@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.crmstore.AuthManager
+import com.example.crmstore.ui.theme.AzulOscuro
 import com.example.crmstore.ui.theme.GrisOscuro2
-import com.example.crmstore.ui.theme.Morado1
 
 
 @Composable
@@ -36,7 +36,7 @@ fun MenuNavegador(navController: NavHostController, authManager: AuthManager) {
         modifier = Modifier.height(98.dp).padding(top = 10.dp)
     ) {
         NavigationBar(
-            containerColor = Morado1,
+            containerColor = AzulOscuro,
         ) {
             // CLIENTES
             NavigationBarItem(

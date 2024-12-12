@@ -81,7 +81,7 @@ fun PantallaAddCliente(
                 onValueChange = { dni = it },
                 label = { Text("DNI") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
@@ -97,7 +97,7 @@ fun PantallaAddCliente(
                 onValueChange = { nombre = it },
                 label = { Text("Nombre") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
@@ -113,7 +113,7 @@ fun PantallaAddCliente(
                 onValueChange = { apellidos = it },
                 label = { Text("Apellidos") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
@@ -146,7 +146,7 @@ fun PantallaAddCliente(
                 label = { Text("Teléfono") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
@@ -162,7 +162,7 @@ fun PantallaAddCliente(
                 onValueChange = { direccion = it },
                 label = { Text("Dirección") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,

@@ -41,6 +41,7 @@ import com.example.crmstore.R
 import com.example.crmstore.componentes.BotonEstandar
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.GrisOscuro2
+import com.example.crmstore.ui.theme.Negro
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -148,7 +149,7 @@ fun PantallaLogin(navHostController: NavHostController){
                     .fillMaxWidth()
                     .padding(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF15A5D0)
+                    containerColor = Color(0xFF0181D7)
                 )
             ) {
                 Row(
@@ -178,7 +179,7 @@ fun PantallaLogin(navHostController: NavHostController){
                 },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                Text("Registrarse con correo electrónico", color = Color.White)
+                Text("Registrarse con correo electrónico", color = Negro)
             }
         }
     }

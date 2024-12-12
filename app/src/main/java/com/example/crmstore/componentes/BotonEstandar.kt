@@ -9,10 +9,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.crmstore.ui.theme.Morado2
+import com.example.crmstore.ui.theme.AzulClaro
+import com.example.crmstore.ui.theme.Negro
 
 @Composable
 fun BotonEstandar(
@@ -26,8 +26,8 @@ fun BotonEstandar(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Morado2,
-            contentColor = Color.White
+            containerColor = AzulClaro,
+            contentColor = Negro
         ),
         modifier = modifier,
         contentPadding = PaddingValues(

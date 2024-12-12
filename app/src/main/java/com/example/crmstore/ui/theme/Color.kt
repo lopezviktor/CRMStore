@@ -10,12 +10,11 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-val Morado1 = Color(0xFF6271BF)
-val Morado2 = Color(0xFF4F69EB)
-val Grisaceo1 = Color(0xFF656D96)
+val AzulOscuro = Color(0xFF588CFD)
+val AzulClaro = Color(0xFF8BB0FF)
 val Rojizo = Color(0xFF720400)
-val Negro = Color(0xFF00001d)
+val Negro = Color(0xFF00001F)
 val GrisOscuro2 = Color(0xFF212633)
-val FondoPantallas = listOf(Color(0xFF9799B2), Color(0xFF87A1E5))
+val FondoPantallas = listOf(Color(0xFFE4EAFD), Color(0xFFB2C8FC))
 
 
