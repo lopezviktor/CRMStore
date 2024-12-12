@@ -37,8 +37,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.crmstore.modelo.Venta
+import com.example.crmstore.ui.theme.AzulClaro
 import com.example.crmstore.ui.theme.FondoPantallas
-import com.example.crmstore.ui.theme.Morado2
 import com.example.crmstore.ui.theme.Negro
 import com.example.crmstore.ui.theme.Rojizo
 import com.example.crmstore.ui.viewmodel.VentaViewModel
@@ -90,18 +90,25 @@ fun PantallaVentas(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Negro,
                         unfocusedTextColor = Negro,
+                        disabledTextColor = Negro,
+                        focusedLabelColor = Negro,
+                        unfocusedLabelColor = Negro,
+                        cursorColor = Negro,
+                        focusedBorderColor = AzulClaro,
+                        unfocusedBorderColor = Negro
                     )
                 )
 
                 // Botón flotante para agregar una nueva venta
                 FloatingActionButton(
                     onClick = { navHostController.navigate("PantallaAddVentas") },
+                    containerColor = AzulClaro,
                     modifier = Modifier.size(56.dp) // Tamaño estándar de un FAB
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Añadir Venta",
-                        tint = Morado2
+                        tint = Negro
                     )
                 }
             }
@@ -118,7 +125,7 @@ fun PantallaVentas(
 
                 clienteNombre.contains(searchQuery, ignoreCase = true) ||
                         empleadoNombre.contains(searchQuery, ignoreCase = true)
-            }
+            }.sortedByDescending { it.second.fecha }
 
             if (filteredVentas.isEmpty()) {
                 Text(

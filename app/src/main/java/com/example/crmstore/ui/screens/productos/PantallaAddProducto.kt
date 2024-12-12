@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.crmstore.componentes.BotonEstandar
 import com.example.crmstore.modelo.Producto
+import com.example.crmstore.ui.theme.AzulClaro
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.GrisOscuro2
 import com.example.crmstore.ui.theme.Negro
@@ -74,14 +75,16 @@ fun PantallaAddProducto(
                 onValueChange = { nombre = it },
                 label = { Text("Nombre del Producto") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -91,14 +94,16 @@ fun PantallaAddProducto(
                 label = { Text("Precio") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -108,14 +113,16 @@ fun PantallaAddProducto(
                 label = { Text("Stock") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -124,14 +131,16 @@ fun PantallaAddProducto(
                 onValueChange = { categoria = it },
                 label = { Text("Categoría") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -140,14 +149,16 @@ fun PantallaAddProducto(
                 onValueChange = { descripcion = it },
                 label = { Text("Descripción") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 

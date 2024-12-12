@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -39,8 +41,10 @@ import androidx.navigation.NavHostController
 import com.example.crmstore.MainActivity
 import com.example.crmstore.R
 import com.example.crmstore.componentes.BotonEstandar
+import com.example.crmstore.ui.theme.AzulClaro
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.GrisOscuro2
+import com.example.crmstore.ui.theme.Negro
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -83,7 +87,18 @@ fun PantallaLogin(navHostController: NavHostController){
                 label = { Text("Email") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(8.dp),
+                textStyle = TextStyle(color = Negro),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
+                )
             )
 
             OutlinedTextField(
@@ -95,6 +110,17 @@ fun PantallaLogin(navHostController: NavHostController){
                     .padding(8.dp),
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
+                textStyle = TextStyle(color = Negro),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -148,7 +174,7 @@ fun PantallaLogin(navHostController: NavHostController){
                     .fillMaxWidth()
                     .padding(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF15A5D0)
+                    containerColor = Color(0xFF0181D7)
                 )
             ) {
                 Row(
@@ -178,7 +204,7 @@ fun PantallaLogin(navHostController: NavHostController){
                 },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                Text("Registrarse con correo electrónico", color = Color.White)
+                Text("Registrarse con correo electrónico", color = Negro)
             }
         }
     }

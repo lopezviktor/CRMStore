@@ -32,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.crmstore.componentes.BotonEstandar
 import com.example.crmstore.modelo.Cliente
+import com.example.crmstore.ui.theme.AzulClaro
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.GrisOscuro2
 import com.example.crmstore.ui.theme.Negro
@@ -81,14 +82,16 @@ fun PantallaAddCliente(
                 onValueChange = { dni = it },
                 label = { Text("DNI") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -97,14 +100,16 @@ fun PantallaAddCliente(
                 onValueChange = { nombre = it },
                 label = { Text("Nombre") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -113,14 +118,16 @@ fun PantallaAddCliente(
                 onValueChange = { apellidos = it },
                 label = { Text("Apellidos") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -136,7 +143,9 @@ fun PantallaAddCliente(
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -146,14 +155,16 @@ fun PantallaAddCliente(
                 label = { Text("Teléfono") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -162,14 +173,16 @@ fun PantallaAddCliente(
                 onValueChange = { direccion = it },
                 label = { Text("Dirección") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(color = Color.White),
+                textStyle = TextStyle(color = Negro),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Negro,
                     unfocusedTextColor = Negro,
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 

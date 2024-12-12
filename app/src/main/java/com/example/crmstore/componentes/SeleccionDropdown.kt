@@ -16,7 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.example.crmstore.ui.theme.Morado2
+import com.example.crmstore.ui.theme.AzulClaro
 
 @Composable
 fun SeleccionDropdown(
@@ -34,7 +34,7 @@ fun SeleccionDropdown(
                 onClick = { expanded = true },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Morado2, // Fondo del botón
+                    containerColor = AzulClaro, // Fondo del botón
                     contentColor = Color.White // Color del texto
                 )
             ) {

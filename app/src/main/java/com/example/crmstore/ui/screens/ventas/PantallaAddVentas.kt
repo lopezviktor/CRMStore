@@ -31,9 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.crmstore.componentes.BotonEstandar
 import com.example.crmstore.componentes.SeleccionDropdown
+import com.example.crmstore.ui.theme.AzulClaro
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.GrisOscuro2
-import com.example.crmstore.ui.theme.Morado2
+import com.example.crmstore.ui.theme.Negro
 import com.example.crmstore.ui.viewmodel.ProductoViewModel
 import com.example.crmstore.ui.viewmodel.VentaViewModel
 
@@ -121,7 +122,7 @@ fun PantallaAddVentas(
             )
 
             LazyColumn(modifier = Modifier.weight(1f).padding(bottom = 8.dp)) {
-                items(productos) { producto ->
+                items(productos.sortedBy { it.nombre }) { producto ->
                     var cantidad by remember { mutableStateOf(1) }
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -153,8 +154,8 @@ fun PantallaAddVentas(
                                     onClick = { if (cantidad > 1) cantidad-- },
                                     enabled = producto.stock > 0,
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Morado2,
-                                        contentColor = Color.White
+                                        containerColor = AzulClaro,
+                                        contentColor = Negro
                                     )
                                 ) {
                                     Text("-")
@@ -164,8 +165,8 @@ fun PantallaAddVentas(
                                     onClick = { cantidad++ },
                                     enabled = cantidad < producto.stock,
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Morado2,
-                                        contentColor = Color.White
+                                        containerColor = AzulClaro,
+                                        contentColor = Negro
                                     )
                                 ){
                                     Text("+")
@@ -183,8 +184,8 @@ fun PantallaAddVentas(
                                 },
                                 enabled = producto.stock > 0,
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Morado2,
-                                    contentColor = Color.White
+                                    containerColor = AzulClaro,
+                                    contentColor = Negro
                                 ),
                                 modifier = Modifier.padding(start = 10.dp)
                             ) {
@@ -244,8 +245,8 @@ fun PantallaAddVentas(
                                         ventaViewModel.eliminarProductoDelCarrito(detalle.productoId)
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Morado2,
-                                        contentColor = Color.White
+                                        containerColor = AzulClaro,
+                                        contentColor = Negro
                                     ),
                                 ) {
                                     Text("Eliminar")

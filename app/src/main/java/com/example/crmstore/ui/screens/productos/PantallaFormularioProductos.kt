@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.crmstore.modelo.Producto
+import com.example.crmstore.ui.theme.AzulClaro
 import com.example.crmstore.ui.theme.FondoPantallas
-import com.example.crmstore.ui.theme.Morado2
 import com.example.crmstore.ui.theme.Negro
 import com.example.crmstore.ui.theme.Rojizo
 import com.example.crmstore.ui.viewmodel.ProductoViewModel
@@ -117,17 +117,24 @@ fun PantallaFormularioProductos(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Negro,
                         unfocusedTextColor = Negro,
+                        disabledTextColor = Negro,
+                        focusedLabelColor = Negro,
+                        unfocusedLabelColor = Negro,
+                        cursorColor = Negro,
+                        focusedBorderColor = AzulClaro,
+                        unfocusedBorderColor = Negro
                     )
                 )
                 // Botón flotante para agregar productos
                 FloatingActionButton(
                     onClick = { navHostController.navigate("PantallaAddProducto") },
+                    containerColor = AzulClaro,
                     modifier = Modifier.size(56.dp) // Tamaño estándar de un FAB
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Agregar Producto",
-                        tint = Morado2
+                        tint = Negro
                     )
                 }
             }
@@ -135,7 +142,7 @@ fun PantallaFormularioProductos(
             // Filtra los productos según el texto de búsqueda
             val filteredProductos = productos.filter {
                 it.nombre.contains(searchQuery, ignoreCase = true)
-            }
+            }.sortedBy { it.nombre.lowercase() }
 
             // Lista de productos
             if (filteredProductos.isEmpty()) {
