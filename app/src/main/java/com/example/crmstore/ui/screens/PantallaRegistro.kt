@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -28,8 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.crmstore.componentes.BotonEstandar
+import com.example.crmstore.ui.theme.AzulClaro
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.GrisOscuro2
+import com.example.crmstore.ui.theme.Negro
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -75,6 +79,17 @@ fun PantallaRegistro(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
+                textStyle = TextStyle(color = Negro),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
+                ),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
@@ -86,6 +101,17 @@ fun PantallaRegistro(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
+                textStyle = TextStyle(color = Negro),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
+                ),
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation()
             )
@@ -97,6 +123,17 @@ fun PantallaRegistro(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
+                textStyle = TextStyle(color = Negro),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Negro,
+                    unfocusedTextColor = Negro,
+                    disabledTextColor = Negro,
+                    focusedLabelColor = Negro,
+                    unfocusedLabelColor = Negro,
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
+                ),
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation()
             )

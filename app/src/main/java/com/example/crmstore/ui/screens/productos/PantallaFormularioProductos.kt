@@ -117,6 +117,12 @@ fun PantallaFormularioProductos(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Negro,
                         unfocusedTextColor = Negro,
+                        disabledTextColor = Negro,
+                        focusedLabelColor = Negro,
+                        unfocusedLabelColor = Negro,
+                        cursorColor = Negro,
+                        focusedBorderColor = AzulClaro,
+                        unfocusedBorderColor = Negro
                     )
                 )
                 // Botón flotante para agregar productos
@@ -136,7 +142,7 @@ fun PantallaFormularioProductos(
             // Filtra los productos según el texto de búsqueda
             val filteredProductos = productos.filter {
                 it.nombre.contains(searchQuery, ignoreCase = true)
-            }
+            }.sortedBy { it.nombre.lowercase() }
 
             // Lista de productos
             if (filteredProductos.isEmpty()) {

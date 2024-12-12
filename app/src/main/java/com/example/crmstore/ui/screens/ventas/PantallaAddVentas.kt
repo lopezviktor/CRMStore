@@ -122,7 +122,7 @@ fun PantallaAddVentas(
             )
 
             LazyColumn(modifier = Modifier.weight(1f).padding(bottom = 8.dp)) {
-                items(productos) { producto ->
+                items(productos.sortedBy { it.nombre }) { producto ->
                     var cantidad by remember { mutableStateOf(1) }
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),

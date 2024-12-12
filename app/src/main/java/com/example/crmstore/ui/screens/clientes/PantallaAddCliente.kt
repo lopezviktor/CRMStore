@@ -32,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.crmstore.componentes.BotonEstandar
 import com.example.crmstore.modelo.Cliente
+import com.example.crmstore.ui.theme.AzulClaro
 import com.example.crmstore.ui.theme.FondoPantallas
 import com.example.crmstore.ui.theme.GrisOscuro2
 import com.example.crmstore.ui.theme.Negro
@@ -88,7 +89,9 @@ fun PantallaAddCliente(
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -104,7 +107,9 @@ fun PantallaAddCliente(
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -120,7 +125,9 @@ fun PantallaAddCliente(
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -136,7 +143,9 @@ fun PantallaAddCliente(
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -153,7 +162,9 @@ fun PantallaAddCliente(
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 
@@ -169,7 +180,9 @@ fun PantallaAddCliente(
                     disabledTextColor = Negro,
                     focusedLabelColor = Negro,
                     unfocusedLabelColor = Negro,
-                    cursorColor = Negro
+                    cursorColor = Negro,
+                    focusedBorderColor = AzulClaro,
+                    unfocusedBorderColor = Negro
                 )
             )
 

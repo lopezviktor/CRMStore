@@ -1,5 +1,7 @@
 package com.example.crmstore.ui.screens.empleados
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,7 +57,10 @@ import com.example.crmstore.ui.theme.Negro
 import com.example.crmstore.ui.theme.Rojizo
 import com.example.crmstore.ui.viewmodel.EmpleadoViewModel
 import kotlinx.coroutines.delay
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PantallaFormularioEmpleados(
     navHostController: NavHostController,
@@ -63,7 +68,9 @@ fun PantallaFormularioEmpleados(
 ) {
     val empleados by empleadoViewModel.empleados.collectAsState()
     val eventos by empleadoViewModel.eventos.collectAsState()
-
+    val eventosOrdenados = eventos.sortedBy { evento ->
+        LocalDate.parse(evento.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+    }
     var mensajeBorrado by remember { mutableStateOf("") }
     var empleadoAEliminar by remember { mutableStateOf<Pair<String, Empleado>?>(null) }
     var showAddEventDialog by remember { mutableStateOf(false) } // Estado para mostrar el diálogo de añadir evento
@@ -122,6 +129,12 @@ fun PantallaFormularioEmpleados(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Negro,
                         unfocusedTextColor = Negro,
+                        disabledTextColor = Negro,
+                        focusedLabelColor = Negro,
+                        unfocusedLabelColor = Negro,
+                        cursorColor = Negro,
+                        focusedBorderColor = AzulClaro,
+                        unfocusedBorderColor = Negro
                     )
                 )
                 FloatingActionButton(
@@ -153,8 +166,8 @@ fun PantallaFormularioEmpleados(
             if (eventos.isEmpty()) {
                 Text("No hay próximos eventos.", Modifier.padding(16.dp))
             } else {
-                LazyColumn(modifier=Modifier.height(100.dp).padding(horizontal=16.dp)) {
-                    items(eventos.take(3)) { evento ->
+                LazyColumn(modifier = Modifier.height(100.dp).padding(horizontal = 16.dp)) {
+                    items(eventosOrdenados.take(10)) { evento ->
                         EventoResumen(evento)
                     }
                 }
@@ -164,7 +177,7 @@ fun PantallaFormularioEmpleados(
             val filteredEmpleados = empleados.filter {
                 it.second.nombre.contains(searchQuery, ignoreCase=true) ||
                         it.second.apellidos.contains(searchQuery, ignoreCase=true)
-            }
+            }.sortedBy { it.second.nombre.lowercase() }
 
             if (filteredEmpleados.isEmpty()) {
                 Text("No se encontraron empleados.", Modifier.padding(16.dp))
@@ -265,13 +278,9 @@ fun EventoResumen(evento: Evento) {
             .fillMaxWidth()
             .padding(vertical=4.dp),
         horizontalArrangement=Arrangement.SpaceBetween) {
-
         Text(evento.fecha, style=MaterialTheme.typography.bodySmall)
-
         Text(evento.titulo, style=MaterialTheme.typography.bodyMedium)
-
     }
-
 }
 
 @Composable

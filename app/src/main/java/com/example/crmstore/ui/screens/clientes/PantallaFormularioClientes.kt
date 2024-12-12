@@ -114,6 +114,12 @@ fun PantallaFormularioClientes(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Negro,
                         unfocusedTextColor = Negro,
+                        disabledTextColor = Negro,
+                        focusedLabelColor = Negro,
+                        unfocusedLabelColor = Negro,
+                        cursorColor = Negro,
+                        focusedBorderColor = AzulClaro,
+                        unfocusedBorderColor = Negro
                     )
                 )
                 // Botón para agregar nuevo cliente
@@ -133,7 +139,7 @@ fun PantallaFormularioClientes(
             val filteredClientes = clientes.filter {
                 it.second.nombre.contains(searchQuery, ignoreCase = true) ||
                         it.second.apellidos.contains(searchQuery, ignoreCase = true)
-            }
+            }.sortedBy { it.second.nombre.lowercase() }
 
             // Lista de clientes
             if (filteredClientes.isEmpty()) {

@@ -90,6 +90,12 @@ fun PantallaVentas(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Negro,
                         unfocusedTextColor = Negro,
+                        disabledTextColor = Negro,
+                        focusedLabelColor = Negro,
+                        unfocusedLabelColor = Negro,
+                        cursorColor = Negro,
+                        focusedBorderColor = AzulClaro,
+                        unfocusedBorderColor = Negro
                     )
                 )
 
@@ -119,7 +125,7 @@ fun PantallaVentas(
 
                 clienteNombre.contains(searchQuery, ignoreCase = true) ||
                         empleadoNombre.contains(searchQuery, ignoreCase = true)
-            }
+            }.sortedByDescending { it.second.fecha }
 
             if (filteredVentas.isEmpty()) {
                 Text(

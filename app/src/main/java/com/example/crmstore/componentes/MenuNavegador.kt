@@ -141,17 +141,17 @@ fun MenuNavegador(navController: NavHostController, authManager: AuthManager) {
                 icon = {
                     Icon(
                         Icons.Filled.ExitToApp,
-                        contentDescription = "Cerrar Sesión",
+                        contentDescription = "Salir",
                         tint = GrisOscuro2
                     )
                 },
                 label = {
                     Text(
-                        "Cerrar Sesión",
-                        color = GrisOscuro2
+                        "Salir",
+                        color = GrisOscuro2,
                     )
                 },
-                selected = false, // No necesita estar seleccionado
+                selected = false,
                 onClick = {
                     authManager.logout(
                         onSuccess = {
