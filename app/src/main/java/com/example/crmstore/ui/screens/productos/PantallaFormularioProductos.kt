@@ -148,7 +148,7 @@ fun PantallaFormularioProductos(
             if (filteredProductos.isEmpty()) {
                 Text(
                     text = "No se encontraron productos.",
-                    color = Color.White,
+                    color = Negro,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),

@@ -97,7 +97,7 @@ fun PantallaDashboardVentas(
                 }
                 item {
                     DashboardCardPager(
-                        title = "Top Productos mas vendidos:",
+                        title = "Top Productos más vendidos:",
                         firstValue = "Total:\n" + topProductos.joinToString("\n") { "${it.first}: ${it.second}" },
                         secondValue = "Mes Actual:\n" + topProductosMes.joinToString("\n") { "${it.first}: ${it.second}" }
                     )
