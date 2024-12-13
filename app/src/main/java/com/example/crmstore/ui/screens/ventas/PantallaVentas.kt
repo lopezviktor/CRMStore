@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -25,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -166,6 +168,8 @@ fun VentaItem(
     empleadoNombre: String,
     onEliminarClick: () -> Unit,
 ) {
+    var showConfirmationDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -180,7 +184,6 @@ fun VentaItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Columna para texto a la izquierda
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -203,7 +206,6 @@ fun VentaItem(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Detalles de la venta
                 Text(
                     text = "Detalles:",
                     style = MaterialTheme.typography.titleSmall
@@ -218,13 +220,34 @@ fun VentaItem(
             }
 
             IconButton(
-                onClick = onEliminarClick,
+                onClick = { showConfirmationDialog = true },
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Eliminar Venta",
                     tint = Rojizo
+                )
+            }
+
+            if (showConfirmationDialog) {
+                AlertDialog(
+                    onDismissRequest = { showConfirmationDialog = false },
+                    title = { Text("Confirmar eliminación") },
+                    text = { Text("¿Estás seguro de que deseas eliminar esta venta? Esta acción no se puede deshacer.") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            onEliminarClick()
+                            showConfirmationDialog = false
+                        }) {
+                            Text("Eliminar", color = Rojizo)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showConfirmationDialog = false }) {
+                            Text("Cancelar")
+                        }
+                    }
                 )
             }
         }

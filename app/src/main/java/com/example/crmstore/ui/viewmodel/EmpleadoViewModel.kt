@@ -1,6 +1,5 @@
 package com.example.crmstore.ui.viewmodel
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app.repository.EmpleadoRepository
@@ -32,7 +31,6 @@ class EmpleadoViewModel : ViewModel() {
     }
 
 
-    // Método para cargar empleados en tiempo real
     private fun cargarEmpleadosEnTiempoReal() {
         empleadoRepository.obtenerEmpleados { empleadosObtenidos ->
             _empleados.value = empleadosObtenidos
@@ -71,19 +69,10 @@ class EmpleadoViewModel : ViewModel() {
         }
     }
 
-    /*
-    // Estado de carga usando mutableStateOf
-    var cargando = mutableStateOf(false)
-        private set
-
-     */
-
-    // Método para obtener un empleado por ID
     fun obtenerEmpleadoPorId(idEmpleado: String): Empleado? {
         return _empleados.value.find { it.first == idEmpleado }?.second
     }
 
-    // Método para actualizar un empleado
     fun actualizarEmpleado(idEmpleado: String, empleadoActualizado: Empleado) {
         viewModelScope.launch {
             try {
@@ -110,7 +99,6 @@ class EmpleadoViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 empleadoRepository.agregarEvento(evento) // Agrega evento en repositorio
-                // No es necesario recargar manualmente porque los eventos están en tiempo real
             } catch (e: Exception) {
                 println("Error al agregar evento: ${e.message}")
             }
@@ -121,7 +109,6 @@ class EmpleadoViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 empleadoRepository.eliminarEvento(idEvento) // Elimina evento del repositorio
-                // No es necesario actualizar localmente porque los eventos están en tiempo real
             } catch (e: Exception) {
                 println("Error al eliminar evento: ${e.message}")
             }
@@ -132,31 +119,9 @@ class EmpleadoViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 empleadoRepository.actualizarEvento(evento) // Actualiza evento en el repositorio
-                // No es necesario actualizar localmente porque los eventos están en tiempo real
             } catch (e: Exception) {
                 println("Error al actualizar evento: ${e.message}")
             }
         }
     }
-
-    /*
-        // Actualizar los datos de un empleado existente
-    fun actualizarEmpleado(idDocumento: String, empleadoActualizado: Empleado) {
-        viewModelScope.launch {
-            try {
-                empleadoRepository.actualizarEmpleado(idDocumento, empleadoActualizado) // Actualiza en el repositorio
-                _empleados.value = _empleados.value.map {
-                    if (it.first == idDocumento) idDocumento to empleadoActualizado else it
-                } // Actualiza localmente la lista
-            } catch (e: Exception) {
-                println("Error al actualizar empleado: ${e.message}")
-            }
-        }
-    }
-
-    // Obtener un empleado por su ID
-    fun obtenerEmpleadoPorId(idDocumento: String): Empleado? {
-        return _empleados.value.find { it.first == idDocumento }?.second
-    }
-     */
 }
